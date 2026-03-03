@@ -667,15 +667,13 @@ async def verify_credential_project(filename: str, token: str = Depends(verify_p
         if cred_data is None:
             raise HTTPException(status_code=404, detail=f"凭证 {filename} 不存在")
 
-        # Refresh access token if needed
+        # Refresh access token if needed (use from_dict to preserve expires_at)
         from src.google_oauth_api import Credentials as GCreds
-        creds = GCreds(
-            access_token=cred_data.get("token") or cred_data.get("access_token", ""),
-            refresh_token=cred_data.get("refresh_token", ""),
-            client_id=cred_data.get("client_id", ""),
-            client_secret=cred_data.get("client_secret", ""),
-        )
-        await creds.refresh_if_needed()
+        creds = GCreds.from_dict(cred_data)
+        token_refreshed = await creds.refresh_if_needed()
+        if token_refreshed:
+            cred_data = {**cred_data, "token": creds.access_token, "access_token": creds.access_token}
+            await cred_manager._storage_adapter.store_credential(filename, cred_data, mode="geminicli")
 
         api_base_url = await get_code_assist_endpoint()
         project_id = await fetch_project_id(
@@ -803,15 +801,10 @@ async def test_credential(filename: str, token: str = Depends(verify_panel_token
         if cred_data is None:
             raise HTTPException(status_code=404, detail=f"凭证 {filename} 不存在")
 
-        creds = GCreds(
-            access_token=cred_data.get("token") or cred_data.get("access_token", ""),
-            refresh_token=cred_data.get("refresh_token", ""),
-            client_id=cred_data.get("client_id", ""),
-            client_secret=cred_data.get("client_secret", ""),
-        )
+        # 用 from_dict 正确恢复 expires_at，避免每次都强制 refresh
+        creds = GCreds.from_dict(cred_data)
         token_refreshed = await creds.refresh_if_needed()
         if token_refreshed:
-            # 同时更新 token 和 access_token 保持与凭证存储格式兼容
             cred_data = {**cred_data, "token": creds.access_token, "access_token": creds.access_token}
             await cred_manager._storage_adapter.store_credential(filename, cred_data, mode="geminicli")
 
