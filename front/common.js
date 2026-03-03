@@ -2399,7 +2399,7 @@ function connectWebSocket() {
     }
 
     try {
-        const wsPath = window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/panel/ws/logs';
+        const wsPath = window.location.protocol.replace(/^http/, 'ws') + '//' + window.location.host + '/panel/ws/logs';
 
         // 添加 token 认证参数
         const wsUrlWithAuth = `${wsPath}?token=${encodeURIComponent(AppState.authToken)}`;
