@@ -426,7 +426,7 @@ async def collect_streaming_response(stream_generator) -> Response:
         f"(tool parts: {collected_tool_parts_count})"
     )
 
-    # 去掉嵌套的 "response" 包装（Antigravity格式 -> 标准Gemini格式）
+    # 去掉嵌套的 "response" 包装（GeminiCLI内部格式 -> 标准Gemini格式）
     if "response" in merged_response and "candidates" not in merged_response:
         log.debug(f"[STREAM COLLECTOR] 展开response包装")
         merged_response = merged_response["response"]
