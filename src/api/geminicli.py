@@ -34,6 +34,74 @@ from src.api.utils import (
 )
 from src.utils import GEMINICLI_USER_AGENT
 
+# ==================== 模型版本工具 ====================
+
+import re as _re
+
+def _extract_model_series(model_name: str) -> str:
+    """
+    提取模型系列标识，用于降级检测的跨版本比较。
+
+    Examples:
+        "gemini-3-pro-preview"          -> "gemini-3-pro"
+        "gemini-3-pro-preview-06-05"    -> "gemini-3-pro"
+        "gemini-3.1-pro-preview-06-05"  -> "gemini-3.1-pro"
+        "gemini-2.5-pro"                -> "gemini-2.5-pro"
+        "gemini-2.0-flash-001"          -> "gemini-2.0-flash"
+        "models/gemini-2.0-flash-exp"   -> "gemini-2.0-flash"
+    """
+    name = model_name.lower()
+    if name.startswith("models/"):
+        name = name[7:]
+    # 移除已知的版本/变种后缀
+    for marker in ("-preview", "-exp", "-latest", "-001", "-002", "-003"):
+        idx = name.find(marker)
+        if idx > 0:
+            name = name[:idx]
+            break
+    # 再移除日期后缀，如 -06-05
+    name = _re.sub(r"-\d{2}-\d{2}$", "", name)
+    return name
+
+
+def _extract_gcli_model_version(chunk_json: Any) -> Optional[str]:
+    """
+    从 GeminiCLI 内部 API 响应中提取 modelVersion。
+
+    GeminiCLI 内部 API 返回结构为::
+
+        {"response": {"candidates": [...], "modelVersion": "...", ...}}
+
+    同时兼容已展开格式 (标准 Gemini API 格式)::
+
+        {"candidates": [...], "modelVersion": "..."}
+    """
+    if isinstance(chunk_json, list):
+        chunk_json = chunk_json[0] if chunk_json else {}
+    if not isinstance(chunk_json, dict):
+        return None
+    # 优先尝试 GeminiCLI 的 response 包装层
+    inner = chunk_json.get("response")
+    if isinstance(inner, dict):
+        ver = inner.get("modelVersion") or inner.get("model")
+        if ver:
+            return ver
+    # 兼容已展开格式
+    return chunk_json.get("modelVersion") or chunk_json.get("model") or None
+
+
+def _log_model_version(requested: str, actual: str) -> None:
+    """记录实际模型版本，当检测到降级时发出警告。"""
+    log.info(f"[MODEL_VERSION] 请求模型: {requested} | 实际响应模型: {actual}")
+    req_series = _extract_model_series(requested)
+    act_series = _extract_model_series(actual)
+    if req_series != act_series:
+        log.warning(
+            f"[MODEL_DOWNGRADE_DETECTED] 请求系列: {req_series} → 实际系列: {act_series} "
+            f"(请求: {requested}, 实际: {actual})"
+        )
+
+
 # ==================== 全局凭证管理器 ====================
 
 # 使用全局单例 credential_manager，自动初始化
@@ -303,15 +371,10 @@ async def stream_request(
                                     data_part = line[5:].strip()
                                     if data_part and data_part != "[DONE]":
                                         chunk_json = json.loads(data_part)
-                                        actual_model_version = None
-                                        if isinstance(chunk_json, list) and chunk_json:
-                                            actual_model_version = chunk_json[0].get("modelVersion") or chunk_json[0].get("model")
-                                        elif isinstance(chunk_json, dict):
-                                            actual_model_version = chunk_json.get("modelVersion") or chunk_json.get("model")
+                                        # GeminiCLI 内部 API 将响应包装在 {"response": {...}} 中
+                                        actual_model_version = _extract_gcli_model_version(chunk_json)
                                         if actual_model_version:
-                                            log.info(f"[MODEL_VERSION] 请求模型: {model_name}, 实际响应模型: {actual_model_version}")
-                                            if model_name and actual_model_version != model_name:
-                                                log.warning(f"[MODEL_DOWNGRADE_DETECTED] 请求: {model_name} → 实际: {actual_model_version}")
+                                            _log_model_version(model_name, actual_model_version)
                                             stream_model_version_logged = True
                                             break
                         except Exception:
@@ -490,15 +553,10 @@ async def non_stream_request(
                 # 记录实际响应的模型版本（检测模型降级）
                 try:
                     resp_json = response.json()
-                    actual_model_version = None
-                    if isinstance(resp_json, list) and resp_json:
-                        actual_model_version = resp_json[0].get("modelVersion") or resp_json[0].get("model")
-                    elif isinstance(resp_json, dict):
-                        actual_model_version = resp_json.get("modelVersion") or resp_json.get("model")
+                    # GeminiCLI 内部 API 将响应包装在 {"response": {...}} 中
+                    actual_model_version = _extract_gcli_model_version(resp_json)
                     if actual_model_version:
-                        log.info(f"[MODEL_VERSION] 请求模型: {model_name}, 实际响应模型: {actual_model_version}")
-                        if model_name and actual_model_version != model_name:
-                            log.warning(f"[MODEL_DOWNGRADE_DETECTED] 请求: {model_name} → 实际: {actual_model_version}")
+                        _log_model_version(model_name, actual_model_version)
                 except Exception:
                     pass
 

@@ -168,8 +168,14 @@ def is_search_model(model_name: str) -> bool:
 # ==================== 统一的 Gemini 请求后处理 ====================
 
 def is_thinking_model(model_name: str) -> bool:
-    """检查是否为思考模型 (包含 -thinking 或 pro)"""
-    return "think" in model_name or "pro" in model_name.lower()
+    """
+    检查是否为显式请求了思考模式的模型。
+
+    规则：仅当模型名中含有 "think" 关键词时才认为需要强制写入 thinkingConfig。
+    "pro" 模型在没有思考后缀（-high/-low/-medium 等）时应使用 API 默认行为，
+    不应注入空的 thinkingConfig，否则会静默关闭默认思考预算，导致质量下降。
+    """
+    return "think" in model_name.lower()
 
 
 async def normalize_gemini_request(
@@ -253,6 +259,13 @@ async def normalize_gemini_request(
                     include_thoughts = return_thoughts
 
             thinking_config["includeThoughts"] = include_thoughts
+
+        # 记录最终 thinkingConfig，便于排查模型降级/质量问题
+        final_tc = generation_config.get("thinkingConfig")
+        if final_tc:
+            log.info(f"[GEMINI_FIX] 模型 {model!r} thinkingConfig = {final_tc}")
+        else:
+            log.debug(f"[GEMINI_FIX] 模型 {model!r} 未设置 thinkingConfig（使用 API 默认值）")
 
         # 2. 搜索模型添加 Google Search
         if is_search_model(model):

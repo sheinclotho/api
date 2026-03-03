@@ -14,6 +14,7 @@ if str(project_root) not in sys.path:
 # 标准库
 import asyncio
 import json
+import time
 
 # 第三方库
 from fastapi import APIRouter, Depends, HTTPException
@@ -259,7 +260,7 @@ async def chat_completions(
             error_chunk = {
                 "id": "error",
                 "object": "chat.completion.chunk",
-                "created": int(asyncio.get_event_loop().time()),
+                "created": int(time.time()),
                 "model": real_model,
                 "choices": [{
                     "index": 0,

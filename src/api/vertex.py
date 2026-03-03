@@ -23,6 +23,24 @@ from src.api.utils import (
 )
 from src.utils import GEMINICLI_USER_AGENT
 
+# 复用 geminicli 的模型版本工具（Vertex AI 响应无 response 包装，直接用）
+from src.api.geminicli import _extract_model_series, _log_model_version
+
+
+def _extract_vertex_model_version(resp_json: Any) -> Optional[str]:
+    """
+    从 Vertex AI 响应中提取 modelVersion。
+
+    Vertex AI 使用标准 Gemini API 格式（无 response 包装层）::
+
+        {"candidates": [...], "modelVersion": "..."}
+    """
+    if isinstance(resp_json, list):
+        resp_json = resp_json[0] if resp_json else {}
+    if not isinstance(resp_json, dict):
+        return None
+    return resp_json.get("modelVersion") or resp_json.get("model") or None
+
 
 # ==================== 请求准备 ====================
 
@@ -246,15 +264,10 @@ async def stream_request(
                                     data_part = line[5:].strip()
                                     if data_part and data_part != "[DONE]":
                                         chunk_json = json.loads(data_part)
-                                        actual_model_version = None
-                                        if isinstance(chunk_json, list) and chunk_json:
-                                            actual_model_version = chunk_json[0].get("modelVersion") or chunk_json[0].get("model")
-                                        elif isinstance(chunk_json, dict):
-                                            actual_model_version = chunk_json.get("modelVersion") or chunk_json.get("model")
+                                        # Vertex AI 使用标准 Gemini 格式，无包装层
+                                        actual_model_version = _extract_vertex_model_version(chunk_json)
                                         if actual_model_version:
-                                            log.info(f"[MODEL_VERSION] 请求模型: {model_name}, 实际响应模型: {actual_model_version}")
-                                            if model_name and actual_model_version != model_name:
-                                                log.warning(f"[MODEL_DOWNGRADE_DETECTED] 请求: {model_name} → 实际: {actual_model_version}")
+                                            _log_model_version(model_name, actual_model_version)
                                             stream_model_version_logged = True
                                             break
                         except Exception:
@@ -404,15 +417,10 @@ async def non_stream_request(
                 # 记录实际响应的模型版本（检测模型降级）
                 try:
                     resp_json = response.json()
-                    actual_model_version = None
-                    if isinstance(resp_json, list) and resp_json:
-                        actual_model_version = resp_json[0].get("modelVersion") or resp_json[0].get("model")
-                    elif isinstance(resp_json, dict):
-                        actual_model_version = resp_json.get("modelVersion") or resp_json.get("model")
+                    # Vertex AI 使用标准 Gemini 格式，无包装层
+                    actual_model_version = _extract_vertex_model_version(resp_json)
                     if actual_model_version:
-                        log.info(f"[MODEL_VERSION] 请求模型: {model_name}, 实际响应模型: {actual_model_version}")
-                        if model_name and actual_model_version != model_name:
-                            log.warning(f"[MODEL_DOWNGRADE_DETECTED] 请求: {model_name} → 实际: {actual_model_version}")
+                        _log_model_version(model_name, actual_model_version)
                 except Exception:
                     pass
 

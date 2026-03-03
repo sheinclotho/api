@@ -121,7 +121,7 @@ def create_health_check_response(format: str = "openai", **kwargs) -> dict:
             "type": "message",
             "role": "assistant",
             "model": str(model),
-            "content": [{"type": "text", "text": "antigravity Anthropic Messages 正常工作中"}],
+            "content": [{"type": "text", "text": "API Anthropic Messages 正常工作中"}],
             "stop_reason": "end_turn",
             "stop_sequence": None,
             "usage": {"input_tokens": 0, "output_tokens": 0},

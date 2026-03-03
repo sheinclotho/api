@@ -1,0 +1,4 @@
+[2026-03-03 11:53:33] [ERROR] Failed to initialize SQLite backend: No module named 'src.storage'
+[2026-03-03 11:53:33] [INFO] [GEMINI_FIX] 模型 'gemini-3-pro-preview-high' thinkingConfig = {'thinkingLevel': 'high', 'includeThoughts': True}
+[2026-03-03 11:53:33] [INFO] [GEMINI_FIX] 模型 'gemini-3-pro-preview-low' thinkingConfig = {'thinkingLevel': 'low', 'includeThoughts': True}
+[2026-03-03 11:53:33] [INFO] [GEMINI_FIX] 模型 'gemini-2.5-pro-high' thinkingConfig = {'thinkingBudget': 16000, 'includeThoughts': True}
