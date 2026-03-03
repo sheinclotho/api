@@ -19,6 +19,29 @@ from config import (
     reload_config,
     ENV_MAPPINGS,
     get_config_value,
+    get_code_assist_endpoint,
+    get_proxy_config,
+    get_oauth_proxy_url,
+    get_googleapis_proxy_url,
+    get_resource_manager_api_url,
+    get_service_usage_api_url,
+    get_antigravity_api_url,
+    get_auto_ban_enabled,
+    get_auto_ban_error_codes,
+    get_retry_429_max_retries,
+    get_retry_429_enabled,
+    get_retry_429_interval,
+    get_anti_truncation_max_attempts,
+    get_compatibility_mode_enabled,
+    get_return_thoughts_to_frontend,
+    get_antigravity_stream2nostream,
+    get_keepalive_url,
+    get_keepalive_interval,
+    get_vertex_ai_location,
+    get_server_host,
+    get_server_port,
+    get_api_password,
+    get_server_password,
 )
 from log import log, get_recent_logs
 from src.credential_manager import credential_manager
@@ -930,23 +953,43 @@ async def get_version(
 
 @router.get("/panel/config")
 async def get_config(token: str = Depends(verify_panel_token)):
-    """获取当前配置"""
+    """获取当前配置（返回含默认值的有效配置）"""
     try:
-        config_items = []
+        current_config = {}
+
+        current_config["code_assist_endpoint"] = await get_code_assist_endpoint()
+        current_config["credentials_dir"] = await get_credentials_dir()
+        current_config["proxy"] = await get_proxy_config() or ""
+        current_config["oauth_proxy_url"] = await get_oauth_proxy_url()
+        current_config["googleapis_proxy_url"] = await get_googleapis_proxy_url()
+        current_config["resource_manager_api_url"] = await get_resource_manager_api_url()
+        current_config["service_usage_api_url"] = await get_service_usage_api_url()
+        current_config["antigravity_api_url"] = await get_antigravity_api_url()
+        current_config["auto_ban_enabled"] = await get_auto_ban_enabled()
+        current_config["auto_ban_error_codes"] = await get_auto_ban_error_codes()
+        current_config["retry_429_max_retries"] = await get_retry_429_max_retries()
+        current_config["retry_429_enabled"] = await get_retry_429_enabled()
+        current_config["retry_429_interval"] = await get_retry_429_interval()
+        current_config["anti_truncation_max_attempts"] = await get_anti_truncation_max_attempts()
+        current_config["compatibility_mode_enabled"] = await get_compatibility_mode_enabled()
+        current_config["return_thoughts_to_frontend"] = await get_return_thoughts_to_frontend()
+        current_config["antigravity_stream2nostream"] = await get_antigravity_stream2nostream()
+        current_config["keepalive_url"] = await get_keepalive_url()
+        current_config["keepalive_interval"] = await get_keepalive_interval()
+        current_config["vertex_ai_location"] = await get_vertex_ai_location()
+        current_config["host"] = await get_server_host()
+        current_config["port"] = await get_server_port()
+        current_config["api_password"] = await get_api_password()
+        current_config["panel_password"] = await get_panel_password()
+        current_config["password"] = await get_server_password()
+
+        # Build env_locked list from ENV_MAPPINGS
         env_locked = []
         for env_key, db_key in ENV_MAPPINGS.items():
-            env_val = os.environ.get(env_key)
-            db_val = await get_config_value(db_key, None)
-            is_locked = env_val is not None
-            if is_locked:
+            if os.environ.get(env_key) is not None:
                 env_locked.append(db_key)
-            config_items.append({
-                "key": db_key,
-                "value": env_val if env_val is not None else (db_val if db_val is not None else ""),
-                "env_locked": is_locked,
-                "env_var": env_key,
-            })
-        return JSONResponse({"config": config_items, "env_locked": env_locked})
+
+        return JSONResponse({"config": current_config, "env_locked": env_locked})
     except Exception as e:
         log.error(f"[PANEL] 获取配置失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))

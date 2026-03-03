@@ -1256,18 +1256,16 @@ async function doUpload(){
 // CONFIG TAB
 // ============================================================
 var CONFIG_META = {
-  API_PASSWORD:{label:'API 密码',type:'password',env:'API_PASSWORD'},
-  PANEL_PASSWORD:{label:'控制面板密码',type:'password',env:'PANEL_PASSWORD'},
-  PORT:{label:'监听端口',type:'number',env:'PORT'},
-  HOST:{label:'监听地址',type:'text',env:'HOST'},
-  CREDENTIALS_DIR:{label:'凭证目录',type:'text',env:'CREDENTIALS_DIR'},
-  CODE_ASSIST_ENDPOINT:{label:'GeminiCLI 端点',type:'text',env:'CODE_ASSIST_ENDPOINT'},
-  VERTEX_AI_LOCATION:{label:'Vertex AI 区域',type:'text',env:'VERTEX_AI_LOCATION'},
-  PROXY:{label:'HTTP 代理',type:'text',env:'PROXY'},
-  AUTO_BAN:{label:'自动封禁',type:'bool',env:'AUTO_BAN'},
-  RETURN_THOUGHTS_TO_FRONTEND:{label:'返回思维链',type:'bool',env:'RETURN_THOUGHTS_TO_FRONTEND'},
-  LOG_LEVEL:{label:'日志级别',type:'select',options:['debug','info','warning','error'],env:'LOG_LEVEL'},
-  ENABLE_LOG:{label:'启用日志',type:'bool',env:'ENABLE_LOG'},
+  api_password:{label:'API 密码',type:'password',env:'API_PASSWORD'},
+  panel_password:{label:'控制面板密码',type:'password',env:'PANEL_PASSWORD'},
+  port:{label:'监听端口',type:'number',env:'PORT'},
+  host:{label:'监听地址',type:'text',env:'HOST'},
+  credentials_dir:{label:'凭证目录',type:'text',env:'CREDENTIALS_DIR'},
+  code_assist_endpoint:{label:'GeminiCLI 端点',type:'text',env:'CODE_ASSIST_ENDPOINT'},
+  vertex_ai_location:{label:'Vertex AI 区域',type:'text',env:'VERTEX_AI_LOCATION'},
+  proxy:{label:'HTTP 代理',type:'text',env:'PROXY'},
+  auto_ban_enabled:{label:'自动封禁',type:'bool',env:'AUTO_BAN'},
+  return_thoughts_to_frontend:{label:'返回思维链',type:'bool',env:'RETURN_THOUGHTS_TO_FRONTEND'},
 };
 
 async function loadConfig(){
