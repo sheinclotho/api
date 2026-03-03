@@ -23,7 +23,6 @@ from config import (
 from log import log, get_recent_logs
 from src.credential_manager import credential_manager
 from src.models import (
-    AuthCallbackUrlRequest,
     AuthStartRequest,
     ConfigSaveRequest,
     CredFileActionRequest,
@@ -224,47 +223,74 @@ async def auth_start(
 
 @router.post("/panel/auth/callback")
 async def auth_callback(
-    request: AuthCallbackUrlRequest,
+    request: Request,
     token: str = Depends(verify_panel_token),
 ):
-    """处理OAuth回调 - 交换token并保存凭证"""
-    try:
-        from src.auth import asyncio_complete_auth_flow
+    """处理OAuth回调 - 交换token并保存凭证（支持自动模式和手动URL模式）
 
-        mode = request.mode or "geminicli"
-        state = getattr(request, "state", None) or None
-        project_id = request.project_id or None
+    Expected JSON body fields:
+      - mode: str (default "geminicli")
+      - state: str | null  — OAuth state from /panel/auth/start
+      - project_id: str | null — optional override
+      - callback_url: str | null — if provided, use URL-based flow; otherwise wait for
+        the local callback server to receive the code (auto mode).
+
+    Using a raw Request instead of a typed model allows callback_url to be truly
+    optional. A typed model with callback_url: str would cause a 422 validation error
+    when the frontend omits the field in auto mode, which would surface as
+    "[object Object]" in the UI because d.detail is an array, not a string.
+    """
+    try:
+        body = await request.json()
+        mode = body.get("mode", "geminicli")
+        state = body.get("state") or None
+        project_id = body.get("project_id") or None
+        callback_url = body.get("callback_url", "")
 
         # If callback_url provided, use the URL-based flow
-        if request.callback_url:
+        if callback_url:
             from src.auth import complete_auth_flow_from_callback_url
             result = await complete_auth_flow_from_callback_url(
-                callback_url=request.callback_url,
+                callback_url=callback_url,
                 project_id=project_id,
                 mode=mode,
             )
         else:
+            from src.auth import asyncio_complete_auth_flow
+            user_session = token if token else None
+            # 30 s timeout: the user lands on step-3 only after the poll confirms
+            # the local callback server already received the code, so the wait is
+            # normally instant.  Extra headroom covers slow token-exchange round-trips.
             result = await asyncio_complete_auth_flow(
                 project_id=project_id,
+                user_session=user_session,
                 state=state,
-                timeout=5,
+                timeout=30,
                 mode=mode,
             )
 
         if result.get("requires_project_selection"):
-            return JSONResponse(result, status_code=200)
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": result.get("error", "需要选择项目"),
+                    "requires_project_selection": True,
+                    "available_projects": result.get("available_projects", []),
+                },
+            )
         if result.get("requires_manual_project_id"):
-            return JSONResponse(result, status_code=200)
+            return JSONResponse(
+                status_code=400,
+                content={"error": result.get("error", "需要手动输入项目ID"), "requires_manual_project_id": True},
+            )
         if not result.get("success"):
             raise HTTPException(status_code=400, detail=result.get("error", "认证失败"))
 
-        # Normalize response shape
-        creds = result.get("credentials", {})
         return JSONResponse({
-            "success": True,
-            "filename": creds.get("filename", result.get("file_path", "")),
-            "email": creds.get("email", ""),
-            "project_id": creds.get("project_id", ""),
+            "credentials": result.get("credentials", {}),
+            "file_path": result.get("file_path", ""),
+            "message": "认证成功，凭证已保存",
+            "auto_detected_project": result.get("auto_detected_project", False),
         })
     except HTTPException:
         raise
