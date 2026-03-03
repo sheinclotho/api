@@ -208,29 +208,15 @@ async def auth_start(
     request: AuthStartRequest,
     token: str = Depends(verify_panel_token),
 ):
-    """启动OAuth认证流程"""
+    """启动OAuth认证流程（本地回调服务器模式）"""
     try:
-        from src.google_oauth_api import Flow
-        from src.utils import CLIENT_ID, CLIENT_SECRET, SCOPES
+        from src.auth import create_auth_url
 
         mode = request.mode or "geminicli"
+        project_id = getattr(request, "project_id", None) or None
 
-        auth = Flow(
-            client_id=CLIENT_ID,
-            client_secret=CLIENT_SECRET,
-            scopes=SCOPES,
-            redirect_uri=_OOB_REDIRECT_URI,
-        )
-
-        state = f"panel_{mode}_{datetime.now(timezone.utc).timestamp()}"
-        auth_url = auth.get_auth_url(state=state)
-
-        return JSONResponse({
-            "success": True,
-            "auth_url": auth_url,
-            "state": state,
-            "redirect_uri": _OOB_REDIRECT_URI,
-        })
+        result = await create_auth_url(project_id=project_id, mode=mode)
+        return JSONResponse(result)
     except Exception as e:
         log.error(f"[PANEL] 启动OAuth认证失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -241,75 +227,57 @@ async def auth_callback(
     request: AuthCallbackUrlRequest,
     token: str = Depends(verify_panel_token),
 ):
-    """处理OAuth回调"""
+    """处理OAuth回调 - 交换token并保存凭证"""
     try:
-        from urllib.parse import parse_qs, urlparse
-
-        from src.google_oauth_api import Flow
-        from src.utils import CLIENT_ID, CLIENT_SECRET, SCOPES
+        from src.auth import asyncio_complete_auth_flow
 
         mode = request.mode or "geminicli"
-        callback_url = request.callback_url
+        state = getattr(request, "state", None) or None
+        project_id = request.project_id or None
 
-        # 从回调URL提取code
-        parsed = urlparse(callback_url)
-        params = parse_qs(parsed.query)
-        code = params.get("code", [None])[0]
+        # If callback_url provided, use the URL-based flow
+        if request.callback_url:
+            from src.auth import complete_auth_flow_from_callback_url
+            result = await complete_auth_flow_from_callback_url(
+                callback_url=request.callback_url,
+                project_id=project_id,
+                mode=mode,
+            )
+        else:
+            result = await asyncio_complete_auth_flow(
+                project_id=project_id,
+                state=state,
+                timeout=5,
+                mode=mode,
+            )
 
-        if not code:
-            raise HTTPException(status_code=400, detail="回调URL中没有找到授权码")
+        if result.get("requires_project_selection"):
+            return JSONResponse(result, status_code=200)
+        if result.get("requires_manual_project_id"):
+            return JSONResponse(result, status_code=200)
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "认证失败"))
 
-        auth = Flow(
-            client_id=CLIENT_ID,
-            client_secret=CLIENT_SECRET,
-            scopes=SCOPES,
-        )
-
-        # 交换token
-        credentials = await auth.exchange_code(code=code)
-        if not credentials:
-            raise HTTPException(status_code=400, detail="交换授权码失败")
-
-        # 获取项目ID
-        project_id = request.project_id or credentials.project_id or ""
-
-        # 获取用户邮箱
-        email = ""
-        try:
-            from src.google_oauth_api import get_user_email
-            email = await get_user_email(credentials) or ""
-        except Exception:
-            pass
-
-        # 保存凭证
-        cred_manager = await credential_manager._get_or_create()
-        cred_data = {
-            "token": credentials.access_token,
-            "access_token": credentials.access_token,
-            "refresh_token": credentials.refresh_token,
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "project_id": project_id,
-            "email": email,
-            "mode": mode,
-        }
-
-        filename = f"{email or 'credential'}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
-        await cred_manager._storage_adapter.store_credential(filename, cred_data, mode=mode)
-
-        log.info(f"[PANEL] 新凭证已保存: {filename} (mode={mode})")
-
+        # Normalize response shape
+        creds = result.get("credentials", {})
         return JSONResponse({
             "success": True,
-            "filename": filename,
-            "email": email,
-            "project_id": project_id,
+            "filename": creds.get("filename", result.get("file_path", "")),
+            "email": creds.get("email", ""),
+            "project_id": creds.get("project_id", ""),
         })
     except HTTPException:
         raise
     except Exception as e:
         log.error(f"[PANEL] OAuth回调处理失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/panel/auth/status/{state}")
+async def auth_status(state: str, token: str = Depends(verify_panel_token)):
+    """查询认证流程状态"""
+    from src.auth import get_auth_status
+    return JSONResponse(get_auth_status(state))
 
 
 @router.post("/panel/auth/exchange")
@@ -515,21 +483,382 @@ async def batch_get_credential_emails(
         log.error(f"[PANEL] 批量获取邮箱失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ====================== Additional Credential Endpoints ======================
+
+@router.get("/panel/credentials/status")
+async def get_credentials_status_paginated(
+    token: str = Depends(verify_panel_token),
+    offset: int = 0,
+    limit: int = 50,
+    status_filter: str = "all",
+    error_code_filter: str = "all",
+    cooldown_filter: str = "all",
+    preview_filter: str = "all",
+):
+    """分页获取凭证状态列表，支持多维度过滤"""
+    try:
+        cred_manager = await credential_manager._get_or_create()
+        all_creds = await cred_manager._storage_adapter.list_credentials(mode="geminicli")
+        items = []
+        now = datetime.now(timezone.utc).timestamp()
+
+        for cred_name in all_creds:
+            try:
+                cred_data = await cred_manager._storage_adapter.get_credential(cred_name, mode="geminicli") or {}
+                cred_state = await cred_manager._storage_adapter.get_credential_state(cred_name, mode="geminicli") or {}
+                disabled = cred_state.get("disabled", cred_data.get("disabled", False))
+                error_codes = cred_state.get("error_codes", [])
+                cooldown_until = cred_state.get("cooldown_until")
+                in_cooldown = bool(cooldown_until and cooldown_until > now)
+                preview = cred_data.get("preview", False)
+
+                # Apply filters
+                if status_filter == "enabled" and disabled:
+                    continue
+                if status_filter == "disabled" and not disabled:
+                    continue
+                if error_code_filter != "all" and error_code_filter not in [str(c) for c in error_codes]:
+                    continue
+                if cooldown_filter == "in_cooldown" and not in_cooldown:
+                    continue
+                if cooldown_filter == "no_cooldown" and in_cooldown:
+                    continue
+                if preview_filter == "preview" and not preview:
+                    continue
+                if preview_filter == "no_preview" and preview:
+                    continue
+
+                items.append({
+                    "filename": cred_name,
+                    "project_id": cred_data.get("project_id", ""),
+                    "email": cred_data.get("email", ""),
+                    "disabled": disabled,
+                    "error_count": cred_state.get("error_count", 0),
+                    "error_codes": error_codes,
+                    "last_success": cred_state.get("last_success"),
+                    "cooldown_until": cooldown_until,
+                    "in_cooldown": in_cooldown,
+                    "preview": preview,
+                })
+            except Exception as e:
+                items.append({"filename": cred_name, "error": str(e)})
+
+        total = len(items)
+        page_items = items[offset: offset + limit]
+        enabled = sum(1 for i in items if not i.get("disabled", False))
+        disabled_count = total - enabled
+
+        return JSONResponse({
+            "items": page_items,
+            "total": total,
+            "offset": offset,
+            "limit": limit,
+            "has_more": offset + limit < total,
+            "stats": {"total": total, "enabled": enabled, "disabled": disabled_count},
+        })
+    except Exception as e:
+        log.error(f"[PANEL] 获取凭证状态分页失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/panel/credentials/{filename}/detail")
+async def get_credential_detail(filename: str, token: str = Depends(verify_panel_token)):
+    """获取凭证详情及状态"""
+    try:
+        cred_manager = await credential_manager._get_or_create()
+        cred_data = await cred_manager._storage_adapter.get_credential(filename, mode="geminicli")
+        if cred_data is None:
+            raise HTTPException(status_code=404, detail=f"凭证 {filename} 不存在")
+        cred_state = await cred_manager._storage_adapter.get_credential_state(filename, mode="geminicli") or {}
+        return JSONResponse({"filename": filename, "data": cred_data, "state": cred_state})
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"[PANEL] 获取凭证详情失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/panel/credentials/download-all")
+async def download_all_credentials(token: str = Depends(verify_panel_token)):
+    """将所有凭证打包为 ZIP 下载"""
+    try:
+        cred_manager = await credential_manager._get_or_create()
+        all_creds = await cred_manager._storage_adapter.list_credentials(mode="geminicli")
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for cred_name in all_creds:
+                try:
+                    cred_data = await cred_manager._storage_adapter.get_credential(cred_name, mode="geminicli")
+                    if cred_data:
+                        zf.writestr(cred_name, json.dumps(cred_data, ensure_ascii=False, indent=2))
+                except Exception:
+                    pass
+        buf.seek(0)
+        return StreamingResponse(
+            buf,
+            media_type="application/zip",
+            headers={"Content-Disposition": 'attachment; filename="credentials.zip"'},
+        )
+    except Exception as e:
+        log.error(f"[PANEL] 下载全部凭证失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/panel/credentials/{filename}/verify-project")
+async def verify_credential_project(filename: str, token: str = Depends(verify_panel_token)):
+    """重新获取凭证的 project_id，并清除错误状态"""
+    try:
+        from src.google_oauth_api import fetch_project_id
+        from src.utils import GEMINICLI_USER_AGENT
+        from config import get_code_assist_endpoint
+
+        cred_manager = await credential_manager._get_or_create()
+        cred_data = await cred_manager._storage_adapter.get_credential(filename, mode="geminicli")
+        if cred_data is None:
+            raise HTTPException(status_code=404, detail=f"凭证 {filename} 不存在")
+
+        # Refresh access token if needed
+        from src.google_oauth_api import Credentials as GCreds
+        creds = GCreds(
+            access_token=cred_data.get("token") or cred_data.get("access_token", ""),
+            refresh_token=cred_data.get("refresh_token", ""),
+            client_id=cred_data.get("client_id", ""),
+            client_secret=cred_data.get("client_secret", ""),
+        )
+        await creds.refresh_if_needed()
+
+        api_base_url = await get_code_assist_endpoint()
+        project_id = await fetch_project_id(
+            access_token=creds.access_token,
+            user_agent=GEMINICLI_USER_AGENT,
+            api_base_url=api_base_url,
+        )
+
+        # Update credential data
+        cred_data["project_id"] = project_id
+        cred_data["token"] = creds.access_token
+        cred_data["access_token"] = creds.access_token
+        await cred_manager._storage_adapter.store_credential(filename, cred_data, mode="geminicli")
+
+        # Reset state
+        await cred_manager._storage_adapter.update_credential_state(
+            filename,
+            {"disabled": False, "error_codes": [], "error_count": 0, "cooldown_until": None},
+            mode="geminicli",
+        )
+
+        log.info(f"[PANEL] 凭证 {filename} project_id 已更新: {project_id}")
+        return JSONResponse({"success": True, "filename": filename, "project_id": project_id, "message": "project_id 已更新，错误状态已清除"})
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"[PANEL] verify-project 失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/panel/credentials/{filename}/configure-preview")
+async def configure_credential_preview(filename: str, request: Request, token: str = Depends(verify_panel_token)):
+    """切换凭证的 preview 标志"""
+    try:
+        body = await request.json()
+        preview = bool(body.get("preview", False))
+
+        cred_manager = await credential_manager._get_or_create()
+        cred_data = await cred_manager._storage_adapter.get_credential(filename, mode="geminicli")
+        if cred_data is None:
+            raise HTTPException(status_code=404, detail=f"凭证 {filename} 不存在")
+
+        cred_data["preview"] = preview
+        await cred_manager._storage_adapter.store_credential(filename, cred_data, mode="geminicli")
+
+        log.info(f"[PANEL] 凭证 {filename} preview={preview}")
+        return JSONResponse({"success": True, "filename": filename, "preview": preview, "message": f"preview 已设置为 {preview}"})
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"[PANEL] configure-preview 失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/panel/credentials/refresh-all-emails")
+async def refresh_all_emails(token: str = Depends(verify_panel_token)):
+    """刷新所有缺少邮箱的凭证的 email 字段"""
+    try:
+        cred_manager = await credential_manager._get_or_create()
+        all_creds = await cred_manager._storage_adapter.list_credentials(mode="geminicli")
+        results = []
+        for cred_name in all_creds:
+            try:
+                cred_data = await cred_manager._storage_adapter.get_credential(cred_name, mode="geminicli") or {}
+                if cred_data.get("email"):
+                    results.append({"filename": cred_name, "skipped": True, "email": cred_data["email"]})
+                    continue
+                email = await cred_manager.get_or_fetch_user_email(cred_name, mode="geminicli")
+                results.append({"filename": cred_name, "success": True, "email": email or ""})
+            except Exception as ex:
+                results.append({"filename": cred_name, "success": False, "error": str(ex)})
+        return JSONResponse({"results": results})
+    except Exception as e:
+        log.error(f"[PANEL] refresh-all-emails 失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/panel/credentials/deduplicate-by-email")
+async def deduplicate_credentials_by_email(token: str = Depends(verify_panel_token)):
+    """按邮箱去重凭证（相同邮箱保留最新一个）"""
+    try:
+        cred_manager = await credential_manager._get_or_create()
+        all_creds = await cred_manager._storage_adapter.list_credentials(mode="geminicli")
+        email_map: Dict[str, List[str]] = {}
+        for cred_name in all_creds:
+            try:
+                cred_data = await cred_manager._storage_adapter.get_credential(cred_name, mode="geminicli") or {}
+                email = cred_data.get("email", "")
+                if email:
+                    email_map.setdefault(email, []).append(cred_name)
+            except Exception:
+                pass
+
+        removed = []
+        for email, names in email_map.items():
+            if len(names) <= 1:
+                continue
+            # Keep the last (most recent) file, remove the rest
+            to_remove = sorted(names)[:-1]
+            for fname in to_remove:
+                try:
+                    await cred_manager.remove_credential(fname, mode="geminicli")
+                    removed.append(fname)
+                except Exception as ex:
+                    log.warning(f"[PANEL] deduplicate: 删除 {fname} 失败: {ex}")
+
+        log.info(f"[PANEL] 去重完成，删除 {len(removed)} 个重复凭证")
+        return JSONResponse({"success": True, "removed": removed, "count": len(removed)})
+    except Exception as e:
+        log.error(f"[PANEL] deduplicate-by-email 失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/panel/credentials/test/{filename}")
+async def test_credential(filename: str, token: str = Depends(verify_panel_token)):
+    """测试凭证：发送一次简单请求验证可用性"""
+    try:
+        from src.google_oauth_api import Credentials as GCreds
+        from src.api.geminicli import prepare_request_headers_and_payload
+        from src.httpx_client import post_async
+        from config import get_code_assist_endpoint
+
+        cred_manager = await credential_manager._get_or_create()
+        cred_data = await cred_manager._storage_adapter.get_credential(filename, mode="geminicli")
+        if cred_data is None:
+            raise HTTPException(status_code=404, detail=f"凭证 {filename} 不存在")
+
+        creds = GCreds(
+            access_token=cred_data.get("token") or cred_data.get("access_token", ""),
+            refresh_token=cred_data.get("refresh_token", ""),
+            client_id=cred_data.get("client_id", ""),
+            client_secret=cred_data.get("client_secret", ""),
+        )
+        await creds.refresh_if_needed()
+
+        api_base_url = await get_code_assist_endpoint()
+        test_body = {
+            "model": "gemini-2.0-flash",
+            "contents": [{"role": "user", "parts": [{"text": "Hi"}]}],
+        }
+        cred_dict = {**cred_data, "token": creds.access_token, "access_token": creds.access_token}
+        auth_headers, payload, target_url = await prepare_request_headers_and_payload(
+            test_body, cred_dict, f"{api_base_url}/v1internal:generateContent"
+        )
+
+        resp = await post_async(target_url, headers=auth_headers, json=payload, timeout=15)
+        if resp.status_code != 200:
+            return JSONResponse({
+                "success": False,
+                "filename": filename,
+                "message": f"HTTP {resp.status_code}: {resp.text[:200]}",
+            })
+
+        resp_json = resp.json()
+        inner = resp_json.get("response", resp_json)
+        model_version = inner.get("modelVersion", "")
+        response_text = ""
+        for cand in inner.get("candidates", []):
+            for part in cand.get("content", {}).get("parts", []):
+                response_text += part.get("text", "")
+
+        return JSONResponse({
+            "success": True,
+            "filename": filename,
+            "message": "凭证测试成功",
+            "model_version": model_version,
+            "response_preview": response_text[:200],
+        })
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"[PANEL] test credential 失败: {e}")
+        return JSONResponse({"success": False, "filename": filename, "message": str(e)})
+
+
+# ====================== Version Info ======================
+
+@router.get("/panel/version")
+async def get_version(
+    check_update: bool = False,
+    token: str = Depends(verify_panel_token),
+):
+    """获取版本信息"""
+    try:
+        version = "unknown"
+        version_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "version.txt")
+        if os.path.exists(version_file):
+            with open(version_file, "r", encoding="utf-8") as f:
+                version = f.read().strip()
+
+        result: Dict[str, Any] = {"version": version}
+
+        if check_update:
+            try:
+                from src.httpx_client import get_async
+                resp = await get_async(
+                    "https://api.github.com/repos/su-kaka/gcli2api/releases/latest",
+                    headers={"User-Agent": "gcli2api-panel"},
+                    timeout=5,
+                )
+                if resp and resp.status_code == 200:
+                    latest = resp.json().get("tag_name", "")
+                    result["latest_version"] = latest
+                    result["update_available"] = latest != version and bool(latest)
+            except Exception:
+                pass
+
+        return JSONResponse(result)
+    except Exception as e:
+        log.error(f"[PANEL] 获取版本信息失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/panel/config")
 async def get_config(token: str = Depends(verify_panel_token)):
     """获取当前配置"""
     try:
         config_items = []
+        env_locked = []
         for env_key, db_key in ENV_MAPPINGS.items():
             env_val = os.environ.get(env_key)
             db_val = await get_config_value(db_key, None)
+            is_locked = env_val is not None
+            if is_locked:
+                env_locked.append(db_key)
             config_items.append({
                 "key": db_key,
                 "value": env_val if env_val is not None else (db_val if db_val is not None else ""),
-                "env_locked": env_val is not None,
+                "env_locked": is_locked,
                 "env_var": env_key,
             })
-        return JSONResponse({"config": config_items})
+        return JSONResponse({"config": config_items, "env_locked": env_locked})
     except Exception as e:
         log.error(f"[PANEL] 获取配置失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -542,12 +871,23 @@ async def save_config(
 ):
     """保存配置"""
     try:
+        _keepalive_keys = {"keepalive_url", "keepalive_interval"}
+        keepalive_changed = any(k in _keepalive_keys for k in request.config)
+
         for key, value in request.config.items():
             adapter = await get_storage_adapter()
             await adapter.set_config(key, value)
 
         # 重载配置缓存
         await reload_config()
+
+        # 如果 keepalive 相关配置变更，重启 keepalive 服务
+        if keepalive_changed:
+            try:
+                from src.keeplive import keepalive_service
+                await keepalive_service.restart()
+            except Exception as ke:
+                log.warning(f"[PANEL] keepalive restart failed: {ke}")
 
         return JSONResponse({"success": True, "message": "配置已保存"})
     except Exception as e:
