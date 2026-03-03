@@ -43,6 +43,7 @@ async def get_config(token: str = Depends(verify_panel_token)):
         current_config["antigravity_stream2nostream"] = await config.get_antigravity_stream2nostream()
         current_config["keepalive_url"] = await config.get_keepalive_url()
         current_config["keepalive_interval"] = await config.get_keepalive_interval()
+        current_config["vertex_ai_location"] = await config.get_vertex_ai_location()
         current_config["host"] = await config.get_server_host()
         current_config["port"] = await config.get_server_port()
         current_config["api_password"] = await config.get_api_password()
@@ -104,6 +105,10 @@ async def save_config(request: ConfigSaveRequest, token: str = Depends(verify_pa
                 new_config["keepalive_interval"] = interval
             except (ValueError, TypeError):
                 raise HTTPException(status_code=400, detail="保活间隔必须是有效整数")
+
+        if "vertex_ai_location" in new_config:
+            if not isinstance(new_config["vertex_ai_location"], str) or not new_config["vertex_ai_location"].strip():
+                raise HTTPException(status_code=400, detail="Vertex AI 区域不能为空")
 
         if "port" in new_config:
             if not isinstance(new_config["port"], int) or new_config["port"] < 1 or new_config["port"] > 65535:
