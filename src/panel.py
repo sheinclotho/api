@@ -38,6 +38,7 @@ from config import (
     get_keepalive_url,
     get_keepalive_interval,
     get_vertex_ai_location,
+    get_vertex_ai_project_id,
     get_server_host,
     get_server_port,
     get_api_password,
@@ -970,6 +971,7 @@ async def get_config(token: str = Depends(verify_panel_token)):
         current_config["keepalive_url"] = await get_keepalive_url()
         current_config["keepalive_interval"] = await get_keepalive_interval()
         current_config["vertex_ai_location"] = await get_vertex_ai_location()
+        current_config["vertex_ai_project_id"] = await get_vertex_ai_project_id()
         current_config["host"] = await get_server_host()
         current_config["port"] = await get_server_port()
         current_config["api_password"] = await get_api_password()

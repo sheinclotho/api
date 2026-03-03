@@ -44,6 +44,7 @@ async def get_config(token: str = Depends(verify_panel_token)):
         current_config["keepalive_url"] = await config.get_keepalive_url()
         current_config["keepalive_interval"] = await config.get_keepalive_interval()
         current_config["vertex_ai_location"] = await config.get_vertex_ai_location()
+        current_config["vertex_ai_project_id"] = await config.get_vertex_ai_project_id()
         current_config["host"] = await config.get_server_host()
         current_config["port"] = await config.get_server_port()
         current_config["api_password"] = await config.get_api_password()
