@@ -837,7 +837,8 @@ async function autoLogin() {
             // 显示面板后初始化滑块
             requestAnimationFrame(() => initTabSlider());
             return true;
-        } else if (response.status === 401) {
+        } else if (response.status === 401 || response.status === 403) {
+            // token 失效（密码已更改或错误）：清除本地存储，要求重新登录
             localStorage.removeItem('gcli2api_auth_token');
             AppState.authToken = '';
             return false;
@@ -2100,6 +2101,13 @@ async function saveConfig() {
 
         if (response.ok) {
             let message = '配置保存成功';
+
+            // 如果 panel_password 被修改，自动更新认证令牌，防止被踢出
+            if (data.new_panel_token) {
+                AppState.authToken = data.new_panel_token;
+                localStorage.setItem('gcli2api_auth_token', AppState.authToken);
+                message += '，面板密码已更新，认证令牌已同步';
+            }
 
             if (data.hot_updated && data.hot_updated.length > 0) {
                 message += `，以下配置已立即生效: ${data.hot_updated.join(', ')}`;

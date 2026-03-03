@@ -1,4 +1,4 @@
-凭证管理路由模块 - 处理 /creds/* 相关的HTTP请求
+"""凭证管理路由模块 - 处理 /creds/* 相关的HTTP请求
 """
 
 import asyncio

@@ -239,11 +239,14 @@ async def get_api_password() -> str:
     """
     # 优先使用 API_PASSWORD，如果没有则使用通用 PASSWORD 保证兼容性
     api_password = await get_config_value("api_password", None, "API_PASSWORD")
-    if api_password is not None:
+    if api_password is not None and str(api_password).strip():
         return str(api_password)
 
-    # 兼容性：使用通用密码
-    return str(await get_config_value("password", "pwd", "PASSWORD"))
+    # 兼容性：使用通用密码（空字符串视为未设置）
+    pwd = await get_config_value("password", None, "PASSWORD")
+    if pwd is not None and str(pwd).strip():
+        return str(pwd)
+    return "pwd"
 
 
 async def get_panel_password() -> str:
@@ -256,11 +259,14 @@ async def get_panel_password() -> str:
     """
     # 优先使用 PANEL_PASSWORD，如果没有则使用通用 PASSWORD 保证兼容性
     panel_password = await get_config_value("panel_password", None, "PANEL_PASSWORD")
-    if panel_password is not None:
+    if panel_password is not None and str(panel_password).strip():
         return str(panel_password)
 
-    # 兼容性：使用通用密码
-    return str(await get_config_value("password", "pwd", "PASSWORD"))
+    # 兼容性：使用通用密码（空字符串视为未设置）
+    pwd = await get_config_value("password", None, "PASSWORD")
+    if pwd is not None and str(pwd).strip():
+        return str(pwd)
+    return "pwd"
 
 
 async def get_server_password() -> str:
