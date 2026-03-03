@@ -768,11 +768,11 @@ async def deduplicate_credentials_by_email(token: str = Depends(verify_panel_tok
 
 @router.post("/panel/credentials/test/{filename}")
 async def test_credential(filename: str, token: str = Depends(verify_panel_token)):
-    """测试凭证：发送一次简单请求验证可用性"""
+    """测试凭证：发送一次简单请求验证可用性，并自动检测 preview 模型支持"""
     try:
         from src.google_oauth_api import Credentials as GCreds
-        from src.api.geminicli import prepare_request_headers_and_payload
         from src.httpx_client import post_async
+        from src.utils import GEMINICLI_USER_AGENT
         from config import get_code_assist_endpoint
 
         cred_manager = await credential_manager._get_or_create()
@@ -786,40 +786,102 @@ async def test_credential(filename: str, token: str = Depends(verify_panel_token
             client_id=cred_data.get("client_id", ""),
             client_secret=cred_data.get("client_secret", ""),
         )
-        await creds.refresh_if_needed()
+        token_refreshed = await creds.refresh_if_needed()
+        if token_refreshed:
+            # 同时更新 token 和 access_token 保持与凭证存储格式兼容
+            cred_data = {**cred_data, "token": creds.access_token, "access_token": creds.access_token}
+            await cred_manager._storage_adapter.store_credential(filename, cred_data, mode="geminicli")
+
+        access_token = creds.access_token
+        project_id = cred_data.get("project_id", "")
+        if not project_id:
+            return JSONResponse({"success": False, "filename": filename, "message": "凭证中没有项目ID，请先通过「重新获取项目ID」功能补全"})
 
         api_base_url = await get_code_assist_endpoint()
-        test_body = {
-            "model": "gemini-2.0-flash",
-            "contents": [{"role": "user", "parts": [{"text": "Hi"}]}],
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "User-Agent": GEMINICLI_USER_AGENT,
         }
-        cred_dict = {**cred_data, "token": creds.access_token, "access_token": creds.access_token}
-        auth_headers, payload, target_url = await prepare_request_headers_and_payload(
-            test_body, cred_dict, f"{api_base_url}/v1internal:generateContent"
+
+        # 第一次测试：gemini-2.5-flash
+        test_model = "gemini-2.5-flash"
+        resp = await post_async(
+            f"{api_base_url}/v1internal:generateContent",
+            headers=headers,
+            json={
+                "model": test_model,
+                "project": project_id,
+                "request": {
+                    "contents": [{"role": "user", "parts": [{"text": "hi"}]}],
+                    "generationConfig": {"maxOutputTokens": 1},
+                },
+            },
+            timeout=30.0,
         )
 
-        resp = await post_async(target_url, headers=auth_headers, json=payload, timeout=15)
-        if resp.status_code != 200:
+        status_code = resp.status_code
+        if status_code not in (200, 429):
             return JSONResponse({
                 "success": False,
                 "filename": filename,
-                "message": f"HTTP {resp.status_code}: {resp.text[:200]}",
+                "message": f"HTTP {status_code}: {resp.text[:200]}",
             })
 
-        resp_json = resp.json()
-        inner = resp_json.get("response", resp_json)
-        model_version = inner.get("modelVersion", "")
-        response_text = ""
-        for cand in inner.get("candidates", []):
-            for part in cand.get("content", {}).get("parts", []):
-                response_text += part.get("text", "")
+        # 清除错误状态
+        if status_code == 200:
+            await cred_manager._storage_adapter.update_credential_state(
+                filename, {"error_codes": [], "error_messages": {}}, mode="geminicli"
+            )
+
+        # 解析响应中的模型版本
+        model_version = ""
+        try:
+            resp_json = resp.json()
+            inner = resp_json.get("response", resp_json)
+            model_version = inner.get("modelVersion", "")
+        except Exception as e:
+            log.warning(f"[PANEL] Failed to parse model version from test response: {e}")
+
+        # 第二次测试：gemini-3-flash-preview，自动更新 preview 标志
+        if status_code == 200:
+            preview_model = "gemini-3-flash-preview"
+            try:
+                preview_resp = await post_async(
+                    f"{api_base_url}/v1internal:generateContent",
+                    headers=headers,
+                    json={
+                        "model": preview_model,
+                        "project": project_id,
+                        "request": {
+                            "contents": [{"role": "user", "parts": [{"text": "hi"}]}],
+                            "generationConfig": {"maxOutputTokens": 1},
+                        },
+                    },
+                    timeout=30.0,
+                )
+                preview_status = preview_resp.status_code
+                if preview_status in (200, 429):
+                    log.info(f"[PANEL] Preview 模型测试成功: {filename} (status={preview_status})")
+                    await cred_manager._storage_adapter.update_credential_state(
+                        filename, {"preview": True}, mode="geminicli"
+                    )
+                elif preview_status == 404:
+                    log.warning(f"[PANEL] Preview 模型不支持: {filename} (status=404)")
+                    await cred_manager._storage_adapter.update_credential_state(
+                        filename, {"preview": False}, mode="geminicli"
+                    )
+                else:
+                    log.warning(f"[PANEL] Preview 模型测试失败: {filename} (status={preview_status})")
+            except Exception as e:
+                log.error(f"[PANEL] Preview 模型测试异常: {filename} - {e}")
 
         return JSONResponse({
             "success": True,
             "filename": filename,
-            "message": "凭证测试成功",
+            "message": "凭证有效（已限流 429）" if status_code == 429 else "凭证测试成功",
             "model_version": model_version,
-            "response_preview": response_text[:200],
+            "status_code": status_code,
         })
     except HTTPException:
         raise
