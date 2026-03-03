@@ -207,12 +207,23 @@ tbody td { padding:10px 12px; font-size:13px; vertical-align:middle; }
 .url-display { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; }
 .url-text { font-family:monospace; font-size:12px; flex:1; word-break:break-all; color:var(--text-dim); }
 @media(max-width:768px){
-  .content{padding:12px;}
+  html,body{font-size:15px;}
+  .content{padding:10px;}
   .stats-grid{grid-template-columns:1fr 1fr;}
-  .tab-btn{padding:10px 10px;font-size:12px;}
-  .topbar{padding:0 12px;}
+  .tab-btn{padding:10px 8px;font-size:12px;}
+  .topbar{padding:0 10px;}
   .filter-bar{flex-direction:column;align-items:flex-start;}
   .td-actions{flex-wrap:wrap;}
+  .info-row{flex-direction:column;align-items:flex-start;gap:6px;}
+  .info-label{min-width:unset;}
+  .info-value{font-size:13px;word-break:break-all;}
+  .endpoint-item{flex-direction:column;align-items:flex-start;gap:6px;}
+  .endpoint-path{font-size:13px;word-break:break-all;}
+  .copy-btn{padding:6px 12px;font-size:13px;min-height:36px;}
+  .btn{min-height:38px;}
+  .login-card{width:92vw;padding:32px 20px;}
+  .modal{min-width:unset;width:96vw;}
+  .toast{min-width:unset;max-width:92vw;}
 }
 </style>
 </head>
@@ -773,7 +784,9 @@ async function loadStatus(){
     document.getElementById('vertexUrl').textContent = base+'/vertex/v1';
     try{
       var cfg = await apiJSON('GET','/panel/config');
-      var pw = (cfg.config||cfg||{}).API_PASSWORD||'';
+      var cfgObj = cfg.config;
+      if(Array.isArray(cfgObj)){ var configDict={}; cfgObj.forEach(function(i){configDict[i.key]=i.value;}); cfgObj=configDict; }
+      var pw = (cfgObj||{}).api_password||'';
       document.getElementById('apiPwdDisplay').dataset.real=pw;
     }catch(e){}
   }catch(e){ toast('error','加载状态失败',e.message); }
@@ -782,11 +795,16 @@ async function loadStatus(){
 
 function renderEndpoints(){
   var el = document.getElementById('endpointList');
-  el.innerHTML = ENDPOINTS.map(function(e){
+  var base = window.location.origin;
+  el.innerHTML = ENDPOINTS.map(function(e,i){
     var cls='badge-method-'+(e.method.toLowerCase());
-    return '<div class="endpoint-item"><span class="badge '+cls+'">'+e.method+'</span>'
-      +'<span class="endpoint-path">'+escHtml(e.path)+'</span>'
-      +'<span class="endpoint-desc">'+escHtml(e.desc)+'</span></div>';
+    var fullUrl = base+e.path;
+    return '<div class="endpoint-item" id="ep-'+i+'">'
+      +'<span class="badge '+cls+'">'+e.method+'</span>'
+      +'<span class="endpoint-path">'+escHtml(fullUrl)+'</span>'
+      +'<span class="endpoint-desc">'+escHtml(e.desc)+'</span>'
+      +'<button class="copy-btn" onclick="copyText(document.querySelector(\'#ep-'+i+' .endpoint-path\').textContent)" style="flex-shrink:0">&#22797;&#21046;</button>'
+      +'</div>';
   }).join('');
 }
 
@@ -1254,7 +1272,9 @@ var CONFIG_META = {
 async function loadConfig(){
   try{
     var d=await apiJSON('GET','/panel/config');
-    configData=d.config||d||{};
+    var raw=d.config||d||{};
+    if(Array.isArray(raw)){configData={};raw.forEach(function(i){configData[i.key]=i.value;});}
+    else{configData=raw;}
     envLocked=d.env_locked||[];
     renderConfigTable();
   }catch(e){ toast('error','加载配置失败',e.message); }
