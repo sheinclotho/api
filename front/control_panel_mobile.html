@@ -1003,25 +1003,7 @@
                 </button>
             </div>
 
-            <!-- API接入地址 -->
-            <div class="card" style="background: #e8f4fd; border: 2px solid #4285f4; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-                <h3 style="margin: 0 0 12px 0; color: #1565c0; font-size: 16px;">🔗 API接入地址</h3>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label style="font-size: 13px; color: #555; margin-bottom: 4px;">GeminiCLI Base URL (OpenAI/Claude格式)</label>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <input type="text" id="mobileGcliUrl" readonly style="flex:1; font-size:14px; background:#fff; border:1px solid #4285f4; border-radius:6px; padding:10px; color:#1a1a1a;" value="加载中..." />
-                        <button class="btn btn-small" onclick="copyApiUrl('mobileGcliUrl')" style="background:#4285f4; white-space:nowrap; padding:10px 14px;">复制</button>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="font-size: 13px; color: #555; margin-bottom: 4px;">Vertex AI Base URL (OpenAI/Claude格式)</label>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <input type="text" id="mobileVertexUrl" readonly style="flex:1; font-size:14px; background:#fff; border:1px solid #4285f4; border-radius:6px; padding:10px; color:#1a1a1a;" value="加载中..." />
-                        <button class="btn btn-small" onclick="copyApiUrl('mobileVertexUrl')" style="background:#4285f4; white-space:nowrap; padding:10px 14px;">复制</button>
-                    </div>
-                </div>
-            </div>
-
+            <!-- 移动端优化的标签页 -->
             <!-- 移动端优化的标签页 -->
             <div class="tabs">
                 <div class="tab-slider"></div>
@@ -1149,7 +1131,7 @@
                 </div>
             </div>
 
-
+            
             <!-- 批量上传标签页 -->
             <div id="uploadTab" class="tab-content">
                 <h3>批量上传认证文件</h3>
@@ -1194,7 +1176,7 @@
                     </div>
                 </div>
 
-            </div>
+                            </div>
 
             <div id="manageTab" class="tab-content">
                 <h3>凭证文件管理</h3>
@@ -1352,7 +1334,7 @@
                 </div>
             </div>
 
-
+            
             <div id="configTab" class="tab-content">
                 <h3>配置管理</h3>
                 <p>管理系统配置参数，修改后立即生效</p>
@@ -1482,8 +1464,6 @@
                                     Cloud Service Usage API端点地址，用于服务启用管理</small>
                             </div>
 
-                        </div>
-
                         <div class="card">
                             <h4 style="margin-top: 0; margin-bottom: 15px;">自动封禁配置</h4>
 
@@ -1566,7 +1546,6 @@
                                     Pro）支持thinking模式，会在生成回答前先输出思考过程。启用后可以看到模型的思考过程；禁用后只显示最终回答，让输出更简洁。
                                 </div>
                             </div>
-
                         </div>
 
                         <div class="card">
@@ -1757,33 +1736,7 @@
     </div>
 
     <!-- 引入公共JavaScript模块 -->
-    <script>
-    // 初始化API接入地址
-    (function() {
-        var base = window.location.origin;
-        var gcliInput = document.getElementById('mobileGcliUrl');
-        var vertexInput = document.getElementById('mobileVertexUrl');
-        if (gcliInput) gcliInput.value = base + '/v1';
-        if (vertexInput) vertexInput.value = base + '/vertex/v1';
-    })();
-
-    function copyApiUrl(inputId) {
-        var input = document.getElementById(inputId);
-        if (!input) return;
-        var text = input.value;
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).catch(function() {
-                input.select(); document.execCommand('copy');
-            });
-        } else {
-            input.select(); document.execCommand('copy');
-        }
-        if (typeof showStatus === 'function') {
-            showStatus('已复制: ' + text, 'success');
-        }
-    }
-    </script>
-    <script src="/front/common.js"></script>
+    <script src="./front/common.js"></script>
 </body>
 
 </html>
