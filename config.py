@@ -106,8 +106,9 @@ async def get_config_value(key: str, default: Any = None, env_var: Optional[str]
         return os.getenv(env_var)
 
     # Priority 2: Memory cache
+    # Treat empty string the same as None (not set), so defaults are used
     value = _get_cached_config(key)
-    if value is not None:
+    if value is not None and value != "":
         return value
 
     return default
