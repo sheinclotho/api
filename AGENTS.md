@@ -13,7 +13,9 @@
 - **OpenAI / Gemini / Claude 格式兼容**：三种请求格式均支持
 - **模型降级检测**：每次响应自动对比请求模型与实际响应模型并写入日志
 
-不包含任何 Antigravity（反重力）相关代码。
+**关于 Antigravity（反重力）**：本项目不部署反重力路由（`src/router/antigravity/` 不存在），
+但 `config.py` 中**保留** `get_antigravity_api_url()` 和 `get_antigravity_stream2nostream()` 配置函数，
+供控制面板 `/config/get` 使用，避免 `AttributeError`。**不要删除这两个函数。**
 
 ---
 
@@ -37,7 +39,7 @@
 │   │   └── fake_stream.py          假流式 / 心跳处理
 │   ├── credential_manager.py       凭证轮换、刷新、封禁管理
 │   ├── storage_adapter.py          存储抽象层（SQLite / 文件系统）
-│   ├── panel.py                    Web 控制面板
+│   ├── panel/                      Web 控制面板（多模块）
 │   └── utils.py                    认证、模型列表、常量
 └── AGENTS.md
 ```
@@ -180,7 +182,10 @@ gemini-2.0-flash-001        → 系列: gemini-2.0-flash  （降级！）
 | `PANEL_PASSWORD` | pwd | 控制面板密码 |
 | `CREDENTIALS_DIR` | ./creds | OAuth 凭证目录 |
 | `CODE_ASSIST_ENDPOINT` | https://cloudcode-pa.googleapis.com | GeminiCLI 端点 |
-| `VERTEX_AI_LOCATION` | us-central1 | Vertex AI 区域 |
+| `VERTEX_AI_LOCATION` | us-central1 | Vertex AI 区域（如 us-central1、asia-east1） |
+| `VERTEX_AI_PROJECT_ID` | — | Vertex AI 项目 ID（通常从凭证自动获取，可覆盖） |
+| `ANTIGRAVITY_API_URL` | https://daily-cloudcode-pa.sandbox.googleapis.com | Antigravity 端点（保留配置项，路由未部署） |
+| `ANTIGRAVITY_STREAM2NOSTREAM` | true | Antigravity 非流式是否使用流式 API（保留配置项） |
 | `PROXY` | — | HTTP 代理 |
 | `AUTO_BAN` | false | 403/429 自动封禁 |
 | `RETURN_THOUGHTS_TO_FRONTEND` | true | 是否返回思维链 |
@@ -191,8 +196,9 @@ gemini-2.0-flash-001        → 系列: gemini-2.0-flash  （降级！）
 
 ## 八、行为准则
 
-1. **不修改 antigravity 相关代码**：该方向已从本项目移除，不在此重新引入。
+1. **保留 antigravity 配置函数**：`get_antigravity_api_url()` 和 `get_antigravity_stream2nostream()` 必须存在于 `config.py`，否则面板 `/config/get` 报 `AttributeError`。不要删除它们，也不要引入反重力路由。
 2. **每次改动 thinkingConfig 逻辑时**：必须验证 `gemini-3-pro-preview`（无后缀）不再被注入空 thinkingConfig。
 3. **每次改动模型版本日志时**：必须验证 GeminiCLI 的 `response` 包装层已正确展开。
 4. **降级检测以模型系列为单位**：不使用精确字符串匹配，避免误报。
-5. **增加新路由时**：在 `web.py` 中注册，并在本文件八一中更新路由列表。
+5. **增加新路由时**：在 `web.py` 中注册，并在本文件更新路由列表。
+6. **Vertex AI 渠道**：`src/api/vertex.py` + `src/router/vertex/` 已实现，使用 `geminicli` 模式凭证，区域由 `VERTEX_AI_LOCATION`（默认 `us-central1`）控制，项目 ID 从凭证自动读取。
