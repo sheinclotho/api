@@ -62,17 +62,17 @@ function createCredsManager(type) {
         // API端点
         getEndpoint: (action) => {
             const endpoints = {
-                status: `./creds/status`,
-                action: `./creds/action`,
-                batchAction: `./creds/batch-action`,
-                download: `./creds/download`,
-                downloadAll: `./creds/download-all`,
-                detail: `./creds/detail`,
-                fetchEmail: `./creds/fetch-email`,
-                refreshAllEmails: `./creds/refresh-all-emails`,
-                deduplicate: `./creds/deduplicate-by-email`,
-                verifyProject: `./creds/verify-project`,
-                quota: `./creds/quota`
+                status: `/panel/credentials/status`,
+                action: `/panel/credentials/action`,
+                batchAction: `/panel/credentials/batch`,
+                download: `/panel/credentials`,
+                downloadAll: `/panel/credentials/download-all`,
+                detail: `/panel/credentials`,
+                fetchEmail: `/panel/credentials/email`,
+                refreshAllEmails: `/panel/credentials/refresh-all-emails`,
+                deduplicate: `/panel/credentials/deduplicate-by-email`,
+                verifyProject: `/panel/credentials`,
+                quota: `/panel/credentials`
             };
             return endpoints[action] || '';
         },
@@ -345,7 +345,7 @@ function createCredsManager(type) {
 // =====================================================================
 function createUploadManager(type) {
     const modeParam = type === 'antigravity' ? 'mode=antigravity' : 'mode=geminicli';
-    const endpoint = `./creds/upload?${modeParam}`;
+    const endpoint = `/panel/credentials/upload?${modeParam}`;
 
     return {
         type: type,
@@ -771,7 +771,7 @@ async function toggleCredDetailsCommon(pathId, manager) {
 
             try {
                 const modeParam = manager.type === 'antigravity' ? 'mode=antigravity' : 'mode=geminicli';
-                const endpoint = `./creds/detail/${encodeURIComponent(filename)}?${modeParam}`;
+                const endpoint = `/panel/credentials/${encodeURIComponent(filename)}/detail?${modeParam}`;
 
                 const response = await fetch(endpoint, { headers: getAuthHeaders() });
 
@@ -801,7 +801,7 @@ async function login() {
     }
 
     try {
-        const response = await fetch('./auth/login', {
+        const response = await fetch('/panel/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password })
@@ -832,7 +832,7 @@ async function autoLogin() {
     AppState.authToken = savedToken;
 
     try {
-        const response = await fetch('./config/get', {
+        const response = await fetch('/panel/config', {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${AppState.authToken}`
@@ -1018,7 +1018,7 @@ async function startAuth() {
         const requestBody = projectId ? { project_id: projectId } : {};
         showStatus(projectId ? '使用指定的项目ID生成认证链接...' : '将尝试自动检测项目ID，正在生成认证链接...', 'info');
 
-        const response = await fetch('./auth/start', {
+        const response = await fetch('/panel/auth/start', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(requestBody)
@@ -1062,7 +1062,7 @@ async function getCredentials() {
 
         const requestBody = AppState.currentProjectId ? { project_id: AppState.currentProjectId } : {};
 
-        const response = await fetch('./auth/callback', {
+        const response = await fetch('/panel/auth/callback', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(requestBody)
@@ -1132,7 +1132,7 @@ async function startAntigravityAuth() {
     try {
         showStatus('正在生成 Antigravity 认证链接...', 'info');
 
-        const response = await fetch('./auth/start', {
+        const response = await fetch('/panel/auth/start', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ mode: 'antigravity' })
@@ -1174,7 +1174,7 @@ async function getAntigravityCredentials() {
     try {
         showStatus('正在等待 Antigravity OAuth回调...', 'info');
 
-        const response = await fetch('./auth/callback', {
+        const response = await fetch('/panel/auth/callback', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ mode: 'antigravity' })
@@ -1280,7 +1280,7 @@ async function processCallbackUrl() {
     try {
         const projectId = document.getElementById('projectId')?.value.trim() || null;
 
-        const response = await fetch('./auth/callback-url', {
+        const response = await fetch('/panel/auth/callback', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ callback_url: callbackUrl, project_id: projectId })
@@ -1331,7 +1331,7 @@ async function processAntigravityCallbackUrl() {
     showStatus('正在从回调URL获取 Antigravity 凭证...', 'info');
 
     try {
-        const response = await fetch('./auth/callback-url', {
+        const response = await fetch('/panel/auth/callback', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ callback_url: callbackUrl, mode: 'antigravity' })
@@ -1383,7 +1383,7 @@ function toggleSelectAll() {
 }
 function batchAction(action) { AppState.creds.batchAction(action); }
 function downloadCred(filename) {
-    fetch(`./creds/download/${filename}`, { headers: { 'Authorization': `Bearer ${AppState.authToken}` } })
+    fetch(`/panel/credentials/${encodeURIComponent(filename)}/download`, { headers: { 'Authorization': `Bearer ${AppState.authToken}` } })
         .then(r => r.ok ? r.blob() : Promise.reject())
         .then(blob => {
             const url = window.URL.createObjectURL(blob);
@@ -1398,7 +1398,7 @@ function downloadCred(filename) {
 }
 async function downloadAllCreds() {
     try {
-        const response = await fetch('./creds/download-all', {
+        const response = await fetch('/panel/credentials/download-all', {
             headers: { 'Authorization': `Bearer ${AppState.authToken}` }
         });
         if (response.ok) {
@@ -1443,7 +1443,7 @@ function toggleSelectAllAntigravity() {
 }
 function batchAntigravityAction(action) { AppState.antigravityCreds.batchAction(action); }
 function downloadAntigravityCred(filename) {
-    fetch(`./creds/download/${filename}?mode=antigravity`, { headers: getAuthHeaders() })
+    fetch(`/panel/credentials/${encodeURIComponent(filename)}/download?mode=antigravity`, { headers: getAuthHeaders() })
         .then(r => r.ok ? r.blob() : Promise.reject())
         .then(blob => {
             const url = window.URL.createObjectURL(blob);
@@ -1463,7 +1463,7 @@ function deleteAntigravityCred(filename) {
 }
 async function downloadAllAntigravityCreds() {
     try {
-        const response = await fetch('./creds/download-all?mode=antigravity', { headers: getAuthHeaders() });
+        const response = await fetch('/panel/credentials/download-all?mode=antigravity', { headers: getAuthHeaders() });
         if (response.ok) {
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
@@ -1526,15 +1526,16 @@ function updateEmailDisplay(filename, email, managerType = 'normal') {
 async function fetchUserEmail(filename) {
     try {
         showStatus('正在获取用户邮箱...', 'info');
-        const response = await fetch(`./creds/fetch-email/${encodeURIComponent(filename)}`, {
+        const response = await fetch(`/panel/credentials/email`, {
             method: 'POST',
-            headers: getAuthHeaders()
+            headers: getAuthHeaders(),
+            body: JSON.stringify({filename})
         });
         const data = await response.json();
-        if (response.ok && data.user_email) {
-            showStatus(`成功获取邮箱: ${data.user_email}`, 'success');
+        if (response.ok && data.email) {
+            showStatus(`成功获取邮箱: ${data.email}`, 'success');
             // 直接更新卡片中的邮箱显示，不刷新整个列表
-            updateEmailDisplay(filename, data.user_email, 'normal');
+            updateEmailDisplay(filename, data.email, 'normal');
         } else {
             showStatus(data.message || '无法获取用户邮箱', 'error');
         }
@@ -1546,15 +1547,16 @@ async function fetchUserEmail(filename) {
 async function fetchAntigravityUserEmail(filename) {
     try {
         showStatus('正在获取用户邮箱...', 'info');
-        const response = await fetch(`./creds/fetch-email/${encodeURIComponent(filename)}?mode=antigravity`, {
+        const response = await fetch(`/panel/credentials/email`, {
             method: 'POST',
-            headers: getAuthHeaders()
+            headers: getAuthHeaders(),
+            body: JSON.stringify({filename})
         });
         const data = await response.json();
-        if (response.ok && data.user_email) {
-            showStatus(`成功获取邮箱: ${data.user_email}`, 'success');
+        if (response.ok && data.email) {
+            showStatus(`成功获取邮箱: ${data.email}`, 'success');
             // 直接更新卡片中的邮箱显示，不刷新整个列表
-            updateEmailDisplay(filename, data.user_email, 'antigravity');
+            updateEmailDisplay(filename, data.email, 'antigravity');
         } else {
             showStatus(data.message || '无法获取用户邮箱', 'error');
         }
@@ -1568,7 +1570,7 @@ async function verifyProjectId(filename) {
         // 显示加载状态
         showStatus('🔍 正在检验Project ID，请稍候...', 'info');
 
-        const response = await fetch(`./creds/verify-project/${encodeURIComponent(filename)}`, {
+        const response = await fetch(`/panel/credentials/${encodeURIComponent(filename)}/verify-project`, {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -1601,7 +1603,7 @@ async function verifyAntigravityProjectId(filename) {
         // 显示加载状态
         showStatus('🔍 正在检验Antigravity Project ID，请稍候...', 'info');
 
-        const response = await fetch(`./creds/verify-project/${encodeURIComponent(filename)}?mode=antigravity`, {
+        const response = await fetch(`/panel/credentials/${encodeURIComponent(filename)}/verify-project?mode=antigravity`, {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -1634,7 +1636,7 @@ async function testCredential(filename) {
         // 显示加载状态
         showStatus('🧪 正在测试凭证，请稍候...', 'info');
 
-        const response = await fetch(`./creds/test/${encodeURIComponent(filename)}`, {
+        const response = await fetch(`/panel/credentials/test/${encodeURIComponent(filename)}`, {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -1682,7 +1684,7 @@ async function testAntigravityCredential(filename) {
         // 显示加载状态
         showStatus('🧪 正在测试Antigravity凭证，请稍候...', 'info');
 
-        const response = await fetch(`./creds/test/${encodeURIComponent(filename)}?mode=antigravity`, {
+        const response = await fetch(`/panel/credentials/test/${encodeURIComponent(filename)}?mode=antigravity`, {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -1730,7 +1732,7 @@ async function configurePreviewChannel(filename) {
         // 显示加载状态
         showStatus('🔧 正在配置Preview通道，请稍候...', 'info');
 
-        const response = await fetch(`./creds/configure-preview/${encodeURIComponent(filename)}`, {
+        const response = await fetch(`/panel/credentials/${encodeURIComponent(filename)}/configure-preview`, {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -1791,7 +1793,7 @@ async function toggleAntigravityQuotaDetails(pathId) {
             contentDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">📊 正在加载额度信息...</div>';
 
             try {
-                const response = await fetch(`./creds/quota/${encodeURIComponent(filename)}?mode=antigravity`, {
+                const response = await fetch(`/panel/credentials/quota/${encodeURIComponent(filename)}?mode=antigravity`, {
                     method: 'GET',
                     headers: getAuthHeaders()
                 });
@@ -1914,7 +1916,7 @@ async function toggleErrorDetailsCommon(pathId, manager) {
 
             try {
                 const modeParam = manager.type === 'antigravity' ? 'mode=antigravity' : 'mode=geminicli';
-                const response = await fetch(`./creds/errors/${encodeURIComponent(filename)}?${modeParam}`, {
+                const response = await fetch(`/panel/credentials/errors/${encodeURIComponent(filename)}?${modeParam}`, {
                     method: 'GET',
                     headers: getAuthHeaders()
                 });
@@ -2079,7 +2081,7 @@ async function batchVerifyProjectIds() {
     // 并行执行所有检验请求
     const promises = selectedFiles.map(async (filename) => {
         try {
-            const response = await fetch(`./creds/verify-project/${encodeURIComponent(filename)}`, {
+            const response = await fetch(`/panel/credentials/${encodeURIComponent(filename)}/verify-project`, {
                 method: 'POST',
                 headers: getAuthHeaders()
             });
@@ -2148,7 +2150,7 @@ async function batchVerifyAntigravityProjectIds() {
     // 并行执行所有检验请求
     const promises = selectedFiles.map(async (filename) => {
         try {
-            const response = await fetch(`./creds/verify-project/${encodeURIComponent(filename)}?mode=antigravity`, {
+            const response = await fetch(`/panel/credentials/${encodeURIComponent(filename)}/verify-project?mode=antigravity`, {
                 method: 'POST',
                 headers: getAuthHeaders()
             });
@@ -2217,7 +2219,7 @@ async function batchConfigurePreview() {
     // 并行执行所有配置请求
     const promises = selectedFiles.map(async (filename) => {
         try {
-            const response = await fetch(`./creds/configure-preview/${encodeURIComponent(filename)}`, {
+            const response = await fetch(`/panel/credentials/${encodeURIComponent(filename)}/configure-preview`, {
                 method: 'POST',
                 headers: getAuthHeaders()
             });
@@ -2288,7 +2290,7 @@ async function refreshAllEmails() {
 
     try {
         showStatus('正在刷新所有用户邮箱...', 'info');
-        const response = await fetch('./creds/refresh-all-emails', {
+        const response = await fetch('/panel/credentials/refresh-all-emails', {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -2309,7 +2311,7 @@ async function refreshAllAntigravityEmails() {
 
     try {
         showStatus('正在刷新所有用户邮箱...', 'info');
-        const response = await fetch('./creds/refresh-all-emails?mode=antigravity', {
+        const response = await fetch('/panel/credentials/refresh-all-emails?mode=antigravity', {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -2330,7 +2332,7 @@ async function deduplicateByEmail() {
 
     try {
         showStatus('正在进行凭证一键去重...', 'info');
-        const response = await fetch('./creds/deduplicate-by-email', {
+        const response = await fetch('/panel/credentials/deduplicate-by-email', {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -2361,7 +2363,7 @@ async function deduplicateAntigravityByEmail() {
 
     try {
         showStatus('正在进行凭证一键去重...', 'info');
-        const response = await fetch('./creds/deduplicate-by-email?mode=antigravity', {
+        const response = await fetch('/panel/credentials/deduplicate-by-email?mode=antigravity', {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -2397,11 +2399,10 @@ function connectWebSocket() {
     }
 
     try {
-        const wsPath = new URL('./logs/stream', window.location.href).href;
-        const wsUrl = wsPath.replace(/^http/, 'ws');
+        const wsPath = window.location.protocol.replace('http', 'ws') + '//' + window.location.host + '/panel/ws/logs';
 
         // 添加 token 认证参数
-        const wsUrlWithAuth = `${wsUrl}?token=${encodeURIComponent(AppState.authToken)}`;
+        const wsUrlWithAuth = `${wsPath}?token=${encodeURIComponent(AppState.authToken)}`;
 
         document.getElementById('connectionStatusText').textContent = '连接中...';
         document.getElementById('logConnectionStatus').className = 'status info';
@@ -2466,7 +2467,7 @@ function clearLogsDisplay() {
 
 async function downloadLogs() {
     try {
-        const response = await fetch('./logs/download', { headers: getAuthHeaders() });
+        const response = await fetch('/panel/logs/download', { headers: getAuthHeaders() });
 
         if (response.ok) {
             const contentDisposition = response.headers.get('Content-Disposition');
@@ -2496,8 +2497,8 @@ async function downloadLogs() {
 
 async function clearLogs() {
     try {
-        const response = await fetch('./logs/clear', {
-            method: 'POST',
+        const response = await fetch('/panel/logs', {
+            method: 'DELETE',
             headers: getAuthHeaders()
         });
 
@@ -2549,7 +2550,7 @@ async function checkEnvCredsStatus() {
         loading.style.display = 'block';
         content.classList.add('hidden');
 
-        const response = await fetch('./auth/env-creds-status', { headers: getAuthHeaders() });
+        const response = await fetch('/panel/auth/env-creds-status', { headers: getAuthHeaders() });
         const data = await response.json();
 
         if (response.ok) {
@@ -2585,7 +2586,7 @@ async function loadEnvCredentials() {
     try {
         showStatus('正在从环境变量导入凭证...', 'info');
 
-        const response = await fetch('./auth/load-env-creds', {
+        const response = await fetch('/panel/auth/load-env-creds', {
             method: 'POST',
             headers: getAuthHeaders()
         });
@@ -2615,7 +2616,7 @@ async function clearEnvCredentials() {
     try {
         showStatus('正在清除环境变量凭证文件...', 'info');
 
-        const response = await fetch('./auth/env-creds', {
+        const response = await fetch('/panel/auth/env-creds', {
             method: 'DELETE',
             headers: getAuthHeaders()
         });
@@ -2644,11 +2645,17 @@ async function loadConfig() {
         loading.style.display = 'block';
         form.classList.add('hidden');
 
-        const response = await fetch('./config/get', { headers: getAuthHeaders() });
+        const response = await fetch('/panel/config', { headers: getAuthHeaders() });
         const data = await response.json();
 
         if (response.ok) {
-            AppState.currentConfig = data.config;
+            const configData = data.config;
+            if (Array.isArray(configData)) {
+                AppState.currentConfig = {};
+                configData.forEach(item => { AppState.currentConfig[item.key] = item.value; });
+            } else {
+                AppState.currentConfig = configData;
+            }
             AppState.envLockedFields = new Set(data.env_locked || []);
 
             populateConfigForm();
@@ -2750,7 +2757,7 @@ async function saveConfig() {
             keepalive_interval: getInt('keepaliveInterval', 60)
         };
 
-        const response = await fetch('./config/save', {
+        const response = await fetch('/panel/config/save', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ config })
@@ -2759,7 +2766,7 @@ async function saveConfig() {
         const data = await response.json();
 
         if (response.ok) {
-            let message = '配置保存成功';
+            let message = data.message || '配置保存成功';
 
             if (data.hot_updated && data.hot_updated.length > 0) {
                 message += `，以下配置已立即生效: ${data.hot_updated.join(', ')}`;
@@ -2832,8 +2839,8 @@ async function refreshUsageStats() {
         list.innerHTML = '';
 
         const [statsResponse, aggregatedResponse] = await Promise.all([
-            fetch('./usage/stats', { headers: getAuthHeaders() }),
-            fetch('./usage/aggregated', { headers: getAuthHeaders() })
+            fetch('/panel/usage/stats', { headers: getAuthHeaders() }),
+            fetch('/panel/usage/aggregated', { headers: getAuthHeaders() })
         ]);
 
         if (statsResponse.status === 401 || aggregatedResponse.status === 401) {
@@ -2905,7 +2912,7 @@ async function resetSingleUsageStats(filename) {
     if (!confirm(`确定要重置 ${filename} 的使用统计吗？`)) return;
 
     try {
-        const response = await fetch('./usage/reset', {
+        const response = await fetch('/panel/usage/reset', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ filename })
@@ -2928,7 +2935,7 @@ async function resetAllUsageStats() {
     if (!confirm('确定要重置所有文件的使用统计吗？此操作不可恢复！')) return;
 
     try {
-        const response = await fetch('./usage/reset', {
+        const response = await fetch('/panel/usage/reset', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({})
@@ -3024,15 +3031,15 @@ function updateCooldownDisplays() {
 // 获取并显示版本信息（不检查更新）
 async function fetchAndDisplayVersion() {
     try {
-        const response = await fetch('./version/info');
+        const response = await fetch('/panel/version');
         const data = await response.json();
 
         const versionText = document.getElementById('versionText');
 
-        if (data.success) {
+        if (data.version) {
             // 只显示版本号
             versionText.textContent = `v${data.version}`;
-            versionText.title = `完整版本: ${data.full_hash}\n提交信息: ${data.message}\n提交时间: ${data.date}`;
+            versionText.title = `版本: ${data.version}` + (data.latest_version ? `\n最新版本: ${data.latest_version}` : '');
             versionText.style.cursor = 'help';
         } else {
             versionText.textContent = '未知版本';
@@ -3060,16 +3067,13 @@ async function checkForUpdates() {
         checkBtn.disabled = true;
 
         // 调用API检查更新
-        const response = await fetch('./version/info?check_update=true');
+        const response = await fetch('/panel/version?check_update=true');
         const data = await response.json();
 
-        if (data.success) {
-            if (data.check_update === false) {
-                // 检查更新失败
-                showStatus(`检查更新失败: ${data.update_error || '未知错误'}`, 'error');
-            } else if (data.has_update === true) {
+        if (data.version) {
+            if (data.update_available === true) {
                 // 有更新
-                const updateMsg = `发现新版本！\n当前: v${data.version}\n最新: v${data.latest_version}\n\n更新内容: ${data.latest_message || '无'}`;
+                const updateMsg = `发现新版本！\n当前: v${data.version}\n最新: v${data.latest_version || '未知'}`;
                 showStatus(updateMsg.replace(/\n/g, ' '), 'warning');
 
                 // 更新按钮样式
@@ -3080,7 +3084,7 @@ async function checkForUpdates() {
                     checkBtn.style.backgroundColor = '#17a2b8';
                     checkBtn.textContent = originalText;
                 }, 5000);
-            } else if (data.has_update === false) {
+            } else if (data.update_available === false) {
                 // 已是最新
                 showStatus('已是最新版本！', 'success');
 
@@ -3096,7 +3100,7 @@ async function checkForUpdates() {
                 showStatus('无法确定是否有更新', 'info');
             }
         } else {
-            showStatus(`检查更新失败: ${data.error}`, 'error');
+            showStatus(`检查更新失败: ${data.error || '未知错误'}`, 'error');
         }
     } catch (error) {
         console.error('检查更新失败:', error);

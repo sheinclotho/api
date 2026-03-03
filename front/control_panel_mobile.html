@@ -1006,12 +1006,29 @@
             <!-- 移动端优化的标签页 -->
             <!-- 移动端优化的标签页 -->
             <div class="tabs">
+
+            <!-- API接入地址 -->
+            <div class="card" style="background: #e8f4fd; border: 2px solid #4285f4; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                <h3 style="margin: 0 0 12px 0; color: #1565c0; font-size: 16px;">🔗 API接入地址</h3>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label style="font-size: 13px; color: #555; margin-bottom: 4px;">GeminiCLI Base URL (OpenAI/Claude格式)</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" id="mobileGcliUrl" readonly style="flex:1; font-size:14px; background:#fff; border:1px solid #4285f4; border-radius:6px; padding:10px; color:#1a1a1a;" value="加载中..." />
+                        <button class="btn btn-small" onclick="copyApiUrl('mobileGcliUrl')" style="background:#4285f4; white-space:nowrap; padding:10px 14px;">复制</button>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 13px; color: #555; margin-bottom: 4px;">Vertex AI Base URL (OpenAI/Claude格式)</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" id="mobileVertexUrl" readonly style="flex:1; font-size:14px; background:#fff; border:1px solid #4285f4; border-radius:6px; padding:10px; color:#1a1a1a;" value="加载中..." />
+                        <button class="btn btn-small" onclick="copyApiUrl('mobileVertexUrl')" style="background:#4285f4; white-space:nowrap; padding:10px 14px;">复制</button>
+                    </div>
+                </div>
+            </div>
                 <div class="tab-slider"></div>
                 <button class="tab active" onclick="switchTab('oauth')">OAuth认证</button>
-                <button class="tab" onclick="switchTab('antigravity')">Antigravity认证</button>
                 <button class="tab" onclick="switchTab('upload')">批量上传</button>
                 <button class="tab" onclick="switchTab('manage')">GCLI凭证</button>
-                <button class="tab" onclick="switchTab('antigravity-manage')">AG凭证</button>
                 <button class="tab" onclick="switchTab('config')">配置管理</button>
                 <button class="tab" onclick="switchTab('logs')">实时日志</button>
                 <button class="tab" onclick="switchTab('about')">项目信息</button>
@@ -1133,102 +1150,6 @@
                 </div>
             </div>
 
-            <!-- Antigravity 认证标签页 -->
-            <div id="antigravityTab" class="tab-content">
-                <div class="status info" style="margin-bottom: 20px;">
-                    <strong>🚀 Antigravity 认证模式</strong>
-                    <p style="margin: 10px 0; font-size: 13px;">
-                        获取谷歌Antigravity 凭证
-                    </p>
-                </div>
-
-                <button class="btn" id="getAntigravityAuthBtn">获取 Antigravity 认证链接</button>
-
-                <div id="antigravityAuthUrlSection" class="hidden">
-                    <h4>Antigravity 认证链接：</h4>
-                    <div
-                        style="background-color: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 8px; padding: 12px; margin: 15px 0; word-break: break-all;">
-                        <a id="antigravityAuthUrl" href="#" target="_blank"
-                            style="color: #4285f4; text-decoration: none;">点击此链接进行认证</a>
-                    </div>
-                    <div class="status info">
-                        <strong>使用说明：</strong>
-                        <ol style="margin: 10px 0; padding-left: 20px; font-size: 13px;">
-                            <li>点击上方认证链接，在新窗口中完成 Google 授权</li>
-                            <li>授权成功后会跳转到 localhost 显示成功页面</li>
-                            <li>关闭 OAuth 窗口，返回本页面</li>
-                            <li>点击下方"获取凭证"按钮完成流程</li>
-                        </ol>
-                    </div>
-
-                    <!-- 快捷回调URL输入选项 -->
-                    <div class="form-group"
-                        style="margin: 15px 0; padding: 12px; border: 2px solid #e8f4fd; border-radius: 8px; background: #f8fcff;">
-                        <div style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"
-                            onclick="toggleAntigravityCallbackUrlSection()">
-                            <span style="font-weight: bold; color: #0066cc; font-size: 13px;">🚀 无法回源？试试快捷方式</span>
-                            <span id="antigravityCallbackUrlToggleIcon"
-                                style="font-size: 14px; color: #666; transition: transform 0.3s ease;">▼</span>
-                        </div>
-                        <div id="antigravityCallbackUrlSection" style="display: none;">
-                            <div
-                                style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 10px; margin-bottom: 10px;">
-                                <div style="color: #856404; font-size: 12px; font-weight: bold; margin-bottom: 4px;">📚
-                                    适用场景：</div>
-                                <ul
-                                    style="color: #856404; font-size: 11px; margin: 0; padding-left: 16px; line-height: 1.4;">
-                                    <li>云服务器、VPS等非本地环境</li>
-                                    <li>防火墙阻止了11451端口访问</li>
-                                    <li>网络环境无法正常回源到localhost</li>
-                                    <li>Docker容器内运行，端口映射问题</li>
-                                </ul>
-                            </div>
-                            <div style="color: #666; font-size: 11px; margin-bottom: 10px; line-height: 1.5;">
-                                <strong style="color: #0066cc;">🔍 什么是回调URL？</strong><br>
-                                完成Google OAuth授权后，浏览器地址栏显示的完整URL，通常看起来像这样：<br>
-                                <code
-                                    style="background: #f1f3f4; padding: 2px 4px; border-radius: 3px; font-size: 10px; word-break: break-all;">
-                                    http://localhost:11451/?state=abc123...&code=4/0AVMBsJ...&scope=email%20profile...
-                                </code>
-                            </div>
-                            <div
-                                style="background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 6px; padding: 8px; margin-bottom: 10px;">
-                                <div style="color: #0066cc; font-size: 11px; font-weight: bold; margin-bottom: 3px;">📋
-                                    使用步骤：</div>
-                                <ol
-                                    style="color: #0066cc; font-size: 10px; margin: 0; padding-left: 16px; line-height: 1.3;">
-                                    <li>点击上方认证链接，完成Google授权</li>
-                                    <li>授权成功后，复制浏览器地址栏的<strong>完整URL</strong></li>
-                                    <li>粘贴到下方输入框，点击获取凭证即可</li>
-                                </ol>
-                            </div>
-                            <div class="input-group">
-                                <input type="url" id="antigravityCallbackUrlInput"
-                                    placeholder="粘贴完整的回调URL，例如：http://localhost:11451/?state=xxx&code=xxx&scope=xxx..."
-                                    style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px; font-size: 12px;">
-                            </div>
-                            <button class="btn"
-                                style="margin-top: 8px; background: #28a745; border-color: #28a745; font-size: 13px;"
-                                onclick="processAntigravityCallbackUrl()">
-                                从回调URL获取凭证
-                            </button>
-                        </div>
-                    </div>
-
-                    <button class="btn" id="getAntigravityCredsBtn" onclick="getAntigravityCredentials()">获取 Antigravity
-                        凭证</button>
-
-                    <div id="antigravityCredsSection" class="hidden">
-                        <h4>Antigravity 凭证内容：</h4>
-                        <div
-                            style="background-color: #f0f8ff; border: 1px solid #b0d4ff; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 11px; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto;">
-                            <pre id="antigravityCredsContent"></pre>
-                        </div>
-                        <button class="btn" onclick="downloadAntigravityCredentials()"
-                            style="margin-top: 10px;">下载凭证文件</button>
-                    </div>
-                </div>
-            </div>
 
             <!-- 批量上传标签页 -->
             <div id="uploadTab" class="tab-content">
@@ -1471,138 +1392,6 @@
                 </div>
             </div>
 
-            <!-- Antigravity凭证管理标签页 -->
-            <div id="antigravity-manageTab" class="tab-content">
-                <h3>Antigravity凭证文件管理</h3>
-                <p>管理所有Antigravity认证文件，查看状态和执行操作</p>
-
-                <!-- 检验功能说明 -->
-                <div class="status info" style="margin-bottom: 15px;">
-                    <strong>💡 检验功能说明：</strong>
-                    <p style="margin: 8px 0; font-size: 14px;">
-                        点击每个凭证的"检验"按钮可以重新获取Project ID。<br>
-                        <strong style="color: #0c5460;">✅ 检验成功可以恢复403错误</strong>，让凭证重新正常工作。<br>
-                        建议在遇到403错误时使用此功能。
-                    </p>
-                </div>
-
-                <!-- 状态统计 -->
-                <div class="stats-container" id="antigravityStatsContainer">
-                    <div class="stat-item" style="border-left: 4px solid #007bff;">
-                        <span class="stat-number" id="antigravityStatTotal">0</span>
-                        <span class="stat-label">总计</span>
-                    </div>
-                    <div class="stat-item" style="border-left: 4px solid #28a745;">
-                        <span class="stat-number" id="antigravityStatNormal">0</span>
-                        <span class="stat-label">正常</span>
-                    </div>
-                    <div class="stat-item" style="border-left: 4px solid #6c757d;">
-                        <span class="stat-number" id="antigravityStatDisabled">0</span>
-                        <span class="stat-label">禁用</span>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 8px; margin: 15px 0; flex-wrap: wrap;">
-                    <button class="btn btn-small" onclick="refreshAntigravityCredsList()"
-                        style="background-color: #17a2b8;">刷新状态</button>
-                    <button class="btn btn-small" onclick="downloadAllAntigravityCreds()"
-                        style="background-color: #28a745;">打包下载</button>
-                </div>
-
-                <!-- 批量操作控件 -->
-                <div class="card" style="margin: 15px 0;">
-                    <h4 style="margin-top: 0; margin-bottom: 10px; font-size: 16px;">批量操作</h4>
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: flex; align-items: center; cursor: pointer; font-size: 14px;">
-                            <input type="checkbox" id="selectAllAntigravityCheckbox"
-                                onchange="toggleSelectAllAntigravity()"
-                                style="margin-right: 8px; transform: scale(1.2);">
-                            全选
-                        </label>
-                        <span id="antigravitySelectedCount"
-                            style="font-weight: bold; color: #007bff; font-size: 12px;">已选择 0
-                            项</span>
-                    </div>
-                    <div class="batch-controls-grid">
-                        <button class="btn btn-small" id="antigravityBatchEnableBtn"
-                            onclick="batchAntigravityAction('enable')" disabled
-                            style="background-color: #28a745;">批量启用</button>
-                        <button class="btn btn-small" id="antigravityBatchDisableBtn"
-                            onclick="batchAntigravityAction('disable')" disabled
-                            style="background-color: #6c757d;">批量禁用</button>
-                        <button class="btn btn-small" id="antigravityBatchDeleteBtn"
-                            onclick="batchAntigravityAction('delete')" disabled
-                            style="background-color: #dc3545;">批量删除</button>
-                        <button class="btn btn-small" id="antigravityBatchVerifyBtn"
-                            onclick="batchVerifyAntigravityProjectIds()" disabled
-                            style="background-color: #ff9800;">批量检验</button>
-                        <button class="btn btn-small" onclick="refreshAllAntigravityEmails()"
-                            style="background-color: #17a2b8;">刷新所有邮箱</button>
-                        <button class="btn btn-small" onclick="deduplicateAntigravityByEmail()"
-                            style="background-color: #e91e63;">凭证一键去重</button>
-                    </div>
-                </div>
-
-                <!-- 筛选控件 -->
-                <div
-                    style="background-color: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 8px; padding: 12px; margin: 15px 0;">
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="antigravityStatusFilter">状态筛选：</label>
-                        <select id="antigravityStatusFilter" onchange="applyAntigravityStatusFilter()">
-                            <option value="all">全部凭证</option>
-                            <option value="enabled">仅启用</option>
-                            <option value="disabled">仅禁用</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="antigravityErrorCodeFilter">错误码筛选：</label>
-                        <select id="antigravityErrorCodeFilter" onchange="applyAntigravityStatusFilter()">
-                            <option value="all">全部</option>
-                            <option value="400">400</option>
-                            <option value="403">403</option>
-                            <option value="429">429</option>
-                            <option value="500">500</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="antigravityCooldownFilter">冷却状态：</label>
-                        <select id="antigravityCooldownFilter" onchange="applyAntigravityStatusFilter()">
-                            <option value="all">全部</option>
-                            <option value="in_cooldown">CD中</option>
-                            <option value="no_cooldown">未CD</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="antigravityPageSizeSelect">每页显示：</label>
-                        <select id="antigravityPageSizeSelect" onchange="changeAntigravityPageSize()">
-                            <option value="10">10</option>
-                            <option value="20" selected>20</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="antigravityCredsListSection">
-                    <div class="loading" id="antigravityCredsLoading">正在加载凭证文件...</div>
-                    <div id="antigravityCredsList"></div>
-
-                    <!-- 分页控件 -->
-                    <div id="antigravityPaginationContainer" style="display: none; text-align: center; margin: 20px 0;">
-                        <div
-                            style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn btn-small" id="antigravityPrevPageBtn"
-                                onclick="changeAntigravityPage(-1)" style="background-color: #6c757d;">上一页</button>
-                            <div id="antigravityPaginationInfo" style="font-size: 14px; color: #666;">第 1 页，共 1 页</div>
-                            <button class="btn btn-small" id="antigravityNextPageBtn" onclick="changeAntigravityPage(1)"
-                                style="background-color: #6c757d;">下一页</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div id="configTab" class="tab-content">
                 <h3>配置管理</h3>
@@ -1733,13 +1522,6 @@
                                     Cloud Service Usage API端点地址，用于服务启用管理</small>
                             </div>
 
-                            <div class="form-group">
-                                <label for="antigravityApiUrl">Antigravity API Endpoint:</label>
-                                <input type="text" id="antigravityApiUrl"
-                                    placeholder="https://daily-cloudcode-pa.sandbox.googleapis.com" />
-                                <small style="display: block; color: #666; font-size: 12px; margin-top: 5px;">Google
-                                    Antigravity API端点地址，用于反重力模式</small>
-                            </div>
                         </div>
 
                         <div class="card">
@@ -1825,23 +1607,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="antigravityStream2nostream"
-                                        style="width: auto; margin: 0;" />
-                                    Antigravity流式转非流式
-                                </label>
-                                <small
-                                    style="display: block; color: #666; font-size: 12px; margin-top: 5px;">启用后，非流式请求将使用流式API并收集为完整响应
-                                    <span style="color: #28a745;">✓ 支持热更新</span></small>
-                                <div
-                                    style="background-color: #f3e5f5; border: 1px solid #9c27b0; border-radius: 6px; padding: 12px; margin-top: 8px; font-size: 13px; color: #4a148c;">
-                                    <strong>🔄
-                                        说明：</strong>针对Antigravity模式的优化选项。启用后，即使客户端请求非流式响应，后端也会使用流式API获取数据并收集完整后再返回。
-                                    <br><strong>适用场景：</strong>某些情况下流式API比非流式API更稳定，启用此选项可以提高响应质量。
-                                    <br><strong>默认：</strong>已启用
-                                </div>
-                            </div>
                         </div>
 
                         <div class="card">
@@ -2032,6 +1797,32 @@
     </div>
 
     <!-- 引入公共JavaScript模块 -->
+    <script>
+    // 初始化API接入地址
+    (function() {
+        var base = window.location.origin;
+        var gcliInput = document.getElementById('mobileGcliUrl');
+        var vertexInput = document.getElementById('mobileVertexUrl');
+        if (gcliInput) gcliInput.value = base + '/v1';
+        if (vertexInput) vertexInput.value = base + '/vertex/v1';
+    })();
+
+    function copyApiUrl(inputId) {
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        var text = input.value;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).catch(function() {
+                input.select(); document.execCommand('copy');
+            });
+        } else {
+            input.select(); document.execCommand('copy');
+        }
+        if (typeof showStatus === 'function') {
+            showStatus('已复制: ' + text, 'success');
+        }
+    }
+    </script>
     <script src="./front/common.js"></script>
 </body>
 
