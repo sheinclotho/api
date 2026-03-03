@@ -9,931 +9,1500 @@
   --bg: #0f1117;
   --surface: #1a1d27;
   --surface2: #222536;
+  --surface3: #2a2d3e;
   --border: #2d3148;
   --accent: #6366f1;
   --accent-hover: #818cf8;
   --accent-dim: rgba(99,102,241,.15);
   --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
   --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
   --yellow: #eab308;
+  --yellow-dim: rgba(234,179,8,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
   --text: #e2e8f0;
   --text-dim: #94a3b8;
+  --text-muted: #64748b;
   --radius: 8px;
-  --shadow: 0 4px 20px rgba(0,0,0,.4);
+  --radius-sm: 4px;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh}
-a{color:var(--accent);text-decoration:none}
-button{cursor:pointer;border:none;border-radius:var(--radius);font-size:13px;transition:.15s}
-input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;padding:7px 10px;width:100%;outline:none;transition:.15s}
-input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-label{color:var(--text-dim);font-size:12px;display:block;margin-bottom:4px}
-
-/* ========== LOGIN ========== */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at top,#1e2035 0%,var(--bg) 70%)}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:40px;width:360px;box-shadow:var(--shadow)}
-.login-card h1{font-size:22px;font-weight:700;margin-bottom:6px;text-align:center}
-.login-card p{color:var(--text-dim);text-align:center;margin-bottom:28px;font-size:13px}
-.login-card .field{margin-bottom:16px}
-.btn-primary{background:var(--accent);color:#fff;padding:9px 18px;font-weight:600;width:100%}
-.btn-primary:hover{background:var(--accent-hover)}
-.btn-secondary{background:var(--surface2);color:var(--text);padding:7px 14px;border:1px solid var(--border)}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
-.btn-danger{background:rgba(239,68,68,.15);color:var(--red);padding:7px 14px;border:1px solid rgba(239,68,68,.3)}
-.btn-danger:hover{background:rgba(239,68,68,.3)}
-.btn-sm{padding:5px 10px;font-size:12px}
-.error-msg{color:var(--red);font-size:12px;margin-top:8px;text-align:center}
-
-/* ========== LAYOUT ========== */
-#app{display:none;flex-direction:column;min-height:100vh}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:16px;height:56px}
-.topbar .logo{font-size:16px;font-weight:700;color:var(--text);flex:1}
-.topbar .logo span{color:var(--accent)}
-.topbar button{padding:6px 14px;font-size:13px}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px}
-.status-dot.red{background:var(--red)}
-.main{display:flex;flex:1}
-.sidebar{width:200px;background:var(--surface);border-right:1px solid var(--border);padding:12px 0;flex-shrink:0}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:var(--text-dim);font-size:13px;transition:.15s;border-left:3px solid transparent}
-.nav-item:hover{color:var(--text);background:var(--accent-dim)}
-.nav-item.active{color:var(--text);background:var(--accent-dim);border-left-color:var(--accent)}
-.nav-item .icon{font-size:16px;width:20px;text-align:center}
-.content{flex:1;padding:24px;overflow-y:auto;max-width:1100px}
-.page{display:none}
-.page.active{display:block}
-
-/* ========== CARDS & SECTIONS ========== */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.card-title{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
-.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-.stat-card .val{font-size:26px;font-weight:700;color:var(--accent)}
-.stat-card .key{color:var(--text-dim);font-size:12px;margin-top:2px}
-
-/* ========== TABLE ========== */
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th{text-align:left;padding:9px 12px;font-size:12px;font-weight:600;color:var(--text-dim);border-bottom:1px solid var(--border);background:var(--surface2)}
-td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(99,102,241,.05)}
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
-.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
-.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
-.badge-yellow{background:rgba(234,179,8,.15);color:var(--yellow)}
-.badge-blue{background:rgba(99,102,241,.15);color:var(--accent)}
-
-/* ========== TOOLBAR ========== */
-.toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
-.toolbar-right{margin-left:auto;display:flex;gap:8px}
-.search-input{width:220px}
-
-/* ========== CHECKBOX ========== */
-input[type=checkbox]{width:auto;cursor:pointer;accent-color:var(--accent)}
-
-/* ========== FORM GRID ========== */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
-.field{margin-bottom:14px}
-
-/* ========== OAUTH STEPS ========== */
-.steps{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-.step{flex:1;min-width:160px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
-.step .num{width:28px;height:28px;border-radius:50%;background:var(--accent-dim);color:var(--accent);font-weight:700;font-size:14px;line-height:28px;margin:0 auto 8px}
-.step .label{font-size:12px;color:var(--text-dim)}
-.step.active .num{background:var(--accent);color:#fff}
-.auth-url-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;word-break:break-all;font-size:12px;margin:10px 0;color:var(--accent)}
-
-/* ========== LOGS ========== */
-#log-output{background:#0a0c10;border:1px solid var(--border);border-radius:var(--radius);padding:14px;height:480px;overflow-y:auto;font-family:'Consolas','Courier New',monospace;font-size:12px;line-height:1.6;color:#c9d1d9}
-.log-info{color:#58a6ff}
-.log-warning{color:var(--yellow)}
-.log-error{color:var(--red)}
-.log-debug{color:#6e7681}
-
-/* ========== CONFIG TABLE ========== */
-.config-row td:first-child{font-weight:600;color:var(--text);width:260px}
-.config-row td:nth-child(2){width:80px;text-align:center}
-.config-env{font-size:11px;color:var(--text-dim);font-family:monospace}
-
-/* ========== DROPZONE ========== */
-.dropzone{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;color:var(--text-dim);cursor:pointer;transition:.15s}
-.dropzone:hover,.dropzone.dragover{border-color:var(--accent);color:var(--accent)}
-.dropzone .icon{font-size:32px;margin-bottom:8px}
-
-/* ========== NOTIFICATION ========== */
-#notification{position:fixed;top:70px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.notif{padding:12px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:var(--shadow);animation:slideIn .2s ease;min-width:260px}
-.notif.success{background:rgba(34,197,94,.2);border:1px solid var(--green);color:var(--green)}
-.notif.error{background:rgba(239,68,68,.2);border:1px solid var(--red);color:var(--red)}
-.notif.info{background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent)}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-
-/* ========== MODAL ========== */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:460px;max-width:95vw;box-shadow:var(--shadow)}
-.modal h3{font-size:16px;font-weight:600;margin-bottom:16px}
-.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
-
-/* ========== ENDPOINTS LIST ========== */
-.endpoint-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
-.endpoint-item:last-child{border-bottom:none}
-.ep-method{font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(99,102,241,.2);color:var(--accent);width:50px;text-align:center;flex-shrink:0}
-.ep-path{font-family:monospace;font-size:12px;flex:1}
-.ep-desc{color:var(--text-dim);font-size:12px}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+#loginPage { display:flex; align-items:center; justify-content:center; min-height:100vh; }
+.login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:48px 40px; width:360px; text-align:center; box-shadow:var(--shadow); }
+.login-logo { font-size:48px; margin-bottom:12px; }
+.login-title { font-size:22px; font-weight:700; margin-bottom:6px; }
+.login-sub { color:var(--text-dim); margin-bottom:32px; font-size:13px; }
+.login-card input[type=password] { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:var(--radius); padding:12px 16px; font-size:15px; outline:none; transition:.2s; }
+.login-card input[type=password]:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-dim); }
+.login-err { color:var(--red); font-size:13px; margin-top:10px; min-height:18px; }
+.login-btn { margin-top:16px; width:100%; padding:12px; background:var(--accent); color:#fff; border:none; border-radius:var(--radius); font-size:15px; font-weight:600; cursor:pointer; transition:.2s; }
+.login-btn:hover { background:var(--accent-hover); }
+#app { display:none; flex-direction:column; height:100vh; }
+.topbar { display:flex; align-items:center; background:var(--surface); border-bottom:1px solid var(--border); padding:0 20px; height:54px; flex-shrink:0; gap:16px; }
+.topbar-brand { font-weight:700; font-size:16px; display:flex; align-items:center; gap:8px; }
+.topbar-brand span { background:linear-gradient(135deg,var(--accent),var(--accent-hover)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.topbar-sep { flex:1; }
+.logout-btn { background:none; border:1px solid var(--border); color:var(--text-dim); padding:6px 14px; border-radius:var(--radius-sm); cursor:pointer; font-size:12px; transition:.2s; }
+.logout-btn:hover { border-color:var(--red); color:var(--red); }
+.tab-bar { display:flex; background:var(--surface); border-bottom:1px solid var(--border); padding:0 20px; gap:2px; flex-shrink:0; overflow-x:auto; }
+.tab-bar::-webkit-scrollbar { height:3px; }
+.tab-btn { background:none; border:none; color:var(--text-dim); padding:12px 16px; cursor:pointer; font-size:13px; font-weight:500; border-bottom:2px solid transparent; transition:.2s; white-space:nowrap; }
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+.content { flex:1; overflow:auto; padding:24px; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+.card-title { font-size:15px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:20px; }
+.stat-card { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; }
+.stat-label { color:var(--text-dim); font-size:12px; margin-bottom:8px; }
+.stat-value { font-size:26px; font-weight:700; }
+.stat-value.green { color:var(--green); }
+.stat-value.red { color:var(--red); }
+.stat-value.blue { color:var(--blue); }
+.stat-value.accent { color:var(--accent); }
+.badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+.badge-green { background:var(--green-dim); color:var(--green); }
+.badge-red { background:var(--red-dim); color:var(--red); }
+.badge-yellow { background:var(--yellow-dim); color:var(--yellow); }
+.badge-blue { background:var(--blue-dim); color:var(--blue); }
+.badge-accent { background:var(--accent-dim); color:var(--accent); }
+.badge-gray { background:rgba(100,116,139,.2); color:var(--text-dim); }
+.badge-method-get { background:var(--green-dim); color:var(--green); }
+.badge-method-post { background:var(--blue-dim); color:var(--blue); }
+.badge-method-delete { background:var(--red-dim); color:var(--red); }
+.badge-method-ws { background:var(--yellow-dim); color:var(--yellow); }
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:var(--radius-sm); border:none; cursor:pointer; font-size:13px; font-weight:500; transition:.2s; }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover:not(:disabled) { background:var(--accent-hover); }
+.btn-secondary { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+.btn-danger { background:var(--red-dim); color:var(--red); border:1px solid transparent; }
+.btn-danger:hover:not(:disabled) { background:var(--red); color:#fff; }
+.btn-success { background:var(--green-dim); color:var(--green); border:1px solid transparent; }
+.btn-success:hover:not(:disabled) { background:var(--green); color:#fff; }
+.btn-sm { padding:5px 10px; font-size:12px; }
+.btn-xs { padding:3px 8px; font-size:11px; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
+.toolbar-sep { width:1px; height:24px; background:var(--border); margin:0 4px; }
+.filter-bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:12px; }
+.filter-bar label { color:var(--text-dim); font-size:12px; }
+.filter-bar select { background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:var(--radius-sm); padding:5px 10px; font-size:12px; outline:none; }
+.filter-bar select:focus { border-color:var(--accent); }
+.table-wrap { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); }
+table { width:100%; border-collapse:collapse; }
+thead th { background:var(--surface2); color:var(--text-dim); font-size:12px; font-weight:600; padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+tbody tr { border-bottom:1px solid var(--border); transition:.15s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--surface2); }
+tbody td { padding:10px 12px; font-size:13px; vertical-align:middle; }
+.td-filename { font-family:monospace; font-size:12px; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
+.td-email { max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:var(--text-dim); display:block; }
+.td-actions { display:flex; gap:4px; flex-wrap:nowrap; }
+.pagination { display:flex; align-items:center; gap:6px; margin-top:14px; flex-wrap:wrap; }
+.pagination .page-info { color:var(--text-dim); font-size:12px; flex:1; }
+.page-btn { background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:5px 10px; border-radius:var(--radius-sm); cursor:pointer; font-size:12px; transition:.2s; }
+.page-btn:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+.page-btn:disabled { opacity:.4; cursor:not-allowed; }
+.page-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.form-group { margin-bottom:16px; }
+.form-label { display:block; color:var(--text-dim); font-size:12px; margin-bottom:6px; font-weight:500; }
+.form-control { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:var(--radius-sm); padding:9px 12px; font-size:14px; outline:none; transition:.2s; }
+.form-control:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-dim); }
+.form-control:disabled { opacity:.5; cursor:not-allowed; }
+.oauth-steps { display:flex; align-items:center; gap:0; margin-bottom:28px; overflow-x:auto; }
+.step-item { display:flex; align-items:center; gap:8px; flex:1; }
+.step-circle { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; border:2px solid var(--border); background:var(--surface2); color:var(--text-dim); flex-shrink:0; transition:.3s; }
+.step-circle.done { background:var(--green-dim); border-color:var(--green); color:var(--green); }
+.step-circle.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
+.step-label { font-size:12px; color:var(--text-dim); white-space:nowrap; }
+.step-label.active { color:var(--accent); font-weight:600; }
+.step-line { flex:1; height:2px; background:var(--border); margin:0 8px; min-width:20px; }
+.step-line.done { background:var(--green); }
+.upload-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:48px 24px; text-align:center; cursor:pointer; transition:.2s; background:var(--surface2); }
+.upload-zone:hover,.upload-zone.drag-over { border-color:var(--accent); background:var(--accent-dim); }
+.upload-zone .upload-icon { font-size:48px; margin-bottom:12px; }
+.upload-zone .upload-text { color:var(--text-dim); font-size:14px; }
+.upload-zone .upload-hint { color:var(--text-muted); font-size:12px; margin-top:6px; }
+.file-list { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
+.file-item { display:flex; align-items:center; justify-content:space-between; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 12px; font-size:13px; }
+.file-item .file-size { color:var(--text-dim); font-size:11px; }
+.config-table { width:100%; border-collapse:collapse; }
+.config-table th { background:var(--surface2); color:var(--text-dim); font-size:12px; font-weight:600; padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); }
+.config-table td { padding:8px 12px; border-bottom:1px solid var(--border); vertical-align:middle; font-size:13px; }
+.config-table tr:last-child td { border-bottom:none; }
+.config-table input,.config-table select { background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:var(--radius-sm); padding:6px 10px; font-size:13px; outline:none; width:100%; }
+.config-table input:focus,.config-table select:focus { border-color:var(--accent); }
+.config-table input:disabled,.config-table select:disabled { opacity:.5; cursor:not-allowed; }
+.config-key { font-family:monospace; font-size:12px; color:var(--accent); }
+.env-var-key { font-family:monospace; font-size:11px; color:var(--text-muted); }
+.log-output { background:#0a0c10; border:1px solid var(--border); border-radius:var(--radius); padding:14px; height:500px; overflow-y:auto; font-family:'Courier New',Courier,monospace; font-size:12px; line-height:1.6; white-space:pre-wrap; word-break:break-all; }
+.log-line { padding:1px 0; }
+.log-line.DEBUG { color:#94a3b8; }
+.log-line.INFO { color:#e2e8f0; }
+.log-line.WARNING { color:#eab308; }
+.log-line.ERROR { color:#ef4444; }
+.log-line.CRITICAL { color:#f97316; font-weight:bold; }
+.ws-indicator { display:inline-flex; align-items:center; gap:6px; font-size:12px; }
+.ws-dot { width:8px; height:8px; border-radius:50%; background:var(--red); }
+.ws-dot.connected { background:var(--green); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+#toastContainer { position:fixed; top:16px; right:16px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.toast { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; min-width:280px; max-width:360px; box-shadow:var(--shadow); display:flex; align-items:flex-start; gap:10px; pointer-events:all; animation:slideIn .3s ease; font-size:13px; }
+.toast.success { border-left:3px solid var(--green); }
+.toast.error { border-left:3px solid var(--red); }
+.toast.info { border-left:3px solid var(--blue); }
+.toast.warning { border-left:3px solid var(--yellow); }
+.toast-icon { font-size:16px; flex-shrink:0; }
+.toast-body { flex:1; }
+.toast-title { font-weight:600; margin-bottom:2px; }
+.toast-msg { color:var(--text-dim); font-size:12px; }
+.toast-close { background:none; border:none; color:var(--text-muted); cursor:pointer; padding:0; font-size:16px; line-height:1; }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes slideOut { from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:0} }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:8888; display:flex; align-items:center; justify-content:center; }
+.modal { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px; min-width:360px; max-width:520px; width:90%; box-shadow:var(--shadow); }
+.modal-title { font-size:16px; font-weight:700; margin-bottom:12px; }
+.modal-body { color:var(--text-dim); font-size:14px; margin-bottom:24px; line-height:1.6; }
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; }
+.info-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.info-row:last-child { border-bottom:none; }
+.info-label { color:var(--text-dim); font-size:12px; min-width:130px; flex-shrink:0; }
+.info-value { font-family:monospace; font-size:13px; flex:1; word-break:break-all; }
+.copy-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:4px 8px; border-radius:var(--radius-sm); cursor:pointer; font-size:11px; transition:.2s; }
+.copy-btn:hover { border-color:var(--accent); color:var(--accent); }
+.endpoint-item { display:flex; align-items:center; gap:10px; padding:8px 12px; background:var(--surface2); border-radius:var(--radius-sm); margin-bottom:6px; font-size:12px; flex-wrap:wrap; }
+.endpoint-path { font-family:monospace; color:var(--text); flex:1; word-break:break-all; }
+.endpoint-desc { color:var(--text-dim); font-size:11px; }
+.version-card { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:20px; text-align:center; margin-bottom:16px; }
+.version-num { font-size:36px; font-weight:700; color:var(--accent); margin-bottom:4px; }
+.version-msg { color:var(--text-dim); font-size:14px; }
+.version-date { color:var(--text-muted); font-size:12px; margin-top:4px; }
+.alert { padding:12px 16px; border-radius:var(--radius-sm); font-size:13px; margin-bottom:12px; display:flex; align-items:flex-start; gap:8px; }
+.alert-info { background:var(--blue-dim); border:1px solid rgba(59,130,246,.3); color:#93c5fd; }
+.alert-success { background:var(--green-dim); border:1px solid rgba(34,197,94,.3); color:#86efac; }
+.alert-warning { background:var(--yellow-dim); border:1px solid rgba(234,179,8,.3); color:#fde047; }
+.alert-error { background:var(--red-dim); border:1px solid rgba(239,68,68,.3); color:#fca5a5; }
+.upload-result-item { display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:var(--radius-sm); margin-bottom:4px; font-size:12px; }
+.upload-result-item.success { background:var(--green-dim); color:var(--green); }
+.upload-result-item.error { background:var(--red-dim); color:var(--red); }
+.upload-result-item.skip { background:var(--yellow-dim); color:var(--yellow); }
+.project-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; transition:.2s; margin-bottom:6px; }
+.project-item:hover { border-color:var(--accent); background:var(--accent-dim); }
+.batch-bar { background:var(--accent-dim); border:1px solid var(--accent); border-radius:var(--radius-sm); padding:8px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; font-size:13px; }
+.batch-bar.hidden { display:none; }
+.divider { height:1px; background:var(--border); margin:20px 0; }
+.spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.url-display { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; }
+.url-text { font-family:monospace; font-size:12px; flex:1; word-break:break-all; color:var(--text-dim); }
+@media(max-width:768px){
+  .content{padding:12px;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .tab-btn{padding:10px 10px;font-size:12px;}
+  .topbar{padding:0 12px;}
+  .filter-bar{flex-direction:column;align-items:flex-start;}
+  .td-actions{flex-wrap:wrap;}
+}
 </style>
 </head>
 <body>
+<div id="toastContainer"></div>
 
-<!-- Login -->
-<div id="login-screen">
+<!-- LOGIN PAGE -->
+<div id="loginPage">
   <div class="login-card">
-    <h1>🚀 GCLI2API</h1>
-    <p>控制面板 - 请输入管理密码</p>
-    <div class="field">
-      <label>密码</label>
-      <input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password">
-    </div>
-    <button class="btn-primary" onclick="doLogin()">登 录</button>
-    <div class="error-msg" id="login-error"></div>
+    <div class="login-logo">&#9889;</div>
+    <div class="login-title">GCLI2API &#25511;&#21046;&#38754;&#26495;</div>
+    <div class="login-sub">Google Gemini API &#20195;&#29702;&#26381;&#21153;</div>
+    <input type="password" id="loginPwd" placeholder="&#35831;&#36755;&#20837;&#25511;&#21046;&#38754;&#26495;&#23494;&#30721;" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-err" id="loginErr"></div>
+    <button class="login-btn" onclick="doLogin()">&#30331; &#24405;</button>
   </div>
 </div>
 
-<!-- Main App -->
+<!-- MAIN APP -->
 <div id="app">
   <div class="topbar">
-    <span class="logo">GCLI<span>2</span>API</span>
-    <span id="topbar-status"><span class="status-dot" id="status-dot"></span><span id="status-text">连接中...</span></span>
-    <button class="btn-secondary" onclick="doLogout()">退出</button>
+    <div class="topbar-brand">&#9889; <span>GCLI2API</span></div>
+    <div class="topbar-sep"></div>
+    <span style="color:var(--text-dim);font-size:13px">Google Gemini API &#20195;&#29702;</span>
+    <button class="logout-btn" onclick="doLogout()">&#36864;&#20986;&#30331;&#24405;</button>
   </div>
-  <div class="main">
-    <div class="sidebar">
-      <div class="nav-item active" data-page="status" onclick="switchPage('status')"><span class="icon">📊</span>系统状态</div>
-      <div class="nav-item" data-page="credentials" onclick="switchPage('credentials')"><span class="icon">🔑</span>凭证管理</div>
-      <div class="nav-item" data-page="auth" onclick="switchPage('auth')"><span class="icon">🔐</span>OAuth认证</div>
-      <div class="nav-item" data-page="config" onclick="switchPage('config')"><span class="icon">⚙️</span>系统配置</div>
-      <div class="nav-item" data-page="logs" onclick="switchPage('logs')"><span class="icon">📋</span>实时日志</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="status" onclick="switchTab('status',this)">&#128202; &#31995;&#32479;&#29366;&#24577;</button>
+    <button class="tab-btn" data-tab="creds" onclick="switchTab('creds',this)">&#128273; &#20449;&#35777;&#31649;&#29702;</button>
+    <button class="tab-btn" data-tab="oauth" onclick="switchTab('oauth',this)">&#128272; OAuth&#35748;&#35777;</button>
+    <button class="tab-btn" data-tab="upload" onclick="switchTab('upload',this)">&#11014; &#25209;&#37327;&#19978;&#20256;</button>
+    <button class="tab-btn" data-tab="config" onclick="switchTab('config',this)">&#9881; &#37197;&#32622;&#31649;&#29702;</button>
+    <button class="tab-btn" data-tab="logs" onclick="switchTab('logs',this)">&#128203; &#23454;&#26102;&#26085;&#24535;</button>
+    <button class="tab-btn" data-tab="info" onclick="switchTab('info',this)">&#8505; &#39033;&#30446;&#20449;&#24687;</button>
+  </div>
+  <div class="content">
+
+    <!-- ===== STATUS TAB ===== -->
+    <div id="tab-status" class="tab-panel active">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">&#20449;&#35777;&#24635;&#25968;</div><div class="stat-value accent" id="statTotal">-</div></div>
+        <div class="stat-card"><div class="stat-label">&#27491;&#24120;&#21487;&#29992;</div><div class="stat-value green" id="statEnabled">-</div></div>
+        <div class="stat-card"><div class="stat-label">&#24050;&#31105;&#29992;</div><div class="stat-value red" id="statDisabled">-</div></div>
+        <div class="stat-card"><div class="stat-label">&#23384;&#20648;&#21518;&#31471;</div><div class="stat-value blue" id="statBackend" style="font-size:16px;padding-top:6px">-</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">&#128279; &#25509;&#20837;&#22320;&#22336;</div>
+        <div class="info-row">
+          <span class="info-label">GeminiCLI Base URL</span>
+          <span class="info-value" id="gcliUrl">-</span>
+          <button class="copy-btn" onclick="copyText(document.getElementById('gcliUrl').textContent)">&#22797;&#21046;</button>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Vertex AI Base URL</span>
+          <span class="info-value" id="vertexUrl">-</span>
+          <button class="copy-btn" onclick="copyText(document.getElementById('vertexUrl').textContent)">&#22797;&#21046;</button>
+        </div>
+        <div class="info-row">
+          <span class="info-label">API &#23494;&#30721;</span>
+          <input type="password" id="apiPwdDisplay" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:6px 10px;font-size:13px;outline:none;" readonly value="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" data-real="">
+          <button class="copy-btn" id="apiPwdToggleBtn" onclick="toggleApiPwd()">&#26174;&#31034;</button>
+          <button class="copy-btn" onclick="copyText(document.getElementById('apiPwdDisplay').dataset.real)">&#22797;&#21046;</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">&#128225; API &#31471;&#28857;&#21015;&#34920;</div>
+        <div id="endpointList"></div>
+      </div>
     </div>
-    <div class="content">
 
-      <!-- STATUS PAGE -->
-      <div class="page active" id="page-status">
-        <div class="stats-grid" id="stats-grid">
-          <div class="stat-card"><div class="val" id="stat-total">-</div><div class="key">凭证总数</div></div>
-          <div class="stat-card"><div class="val green" id="stat-enabled" style="color:var(--green)">-</div><div class="key">已启用</div></div>
-          <div class="stat-card"><div class="val" id="stat-disabled" style="color:var(--red)">-</div><div class="key">已禁用</div></div>
-          <div class="stat-card"><div class="val" id="stat-backend" style="font-size:16px">-</div><div class="key">存储后端</div></div>
-        </div>
-        <div class="card">
-          <div class="card-title">📡 API 端点</div>
-          <div id="endpoint-list">
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/v1/chat/completions</span><span class="ep-desc">GeminiCLI · OpenAI格式</span></div>
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/v1/messages</span><span class="ep-desc">GeminiCLI · Claude格式</span></div>
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/v1beta/models/{model}:generateContent</span><span class="ep-desc">GeminiCLI · Gemini格式</span></div>
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/v1beta/models/{model}:streamGenerateContent</span><span class="ep-desc">GeminiCLI · Gemini流式</span></div>
-            <div class="endpoint-item"><span class="ep-method">GET</span><span class="ep-path">/v1/models</span><span class="ep-desc">模型列表 · OpenAI格式</span></div>
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/vertex/v1/chat/completions</span><span class="ep-desc">Vertex AI · OpenAI格式</span></div>
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/vertex/v1/messages</span><span class="ep-desc">Vertex AI · Claude格式</span></div>
-            <div class="endpoint-item"><span class="ep-method">POST</span><span class="ep-path">/vertex/v1/models/{model}:generateContent</span><span class="ep-desc">Vertex AI · Gemini格式</span></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">🌐 接入地址</div>
-          <div class="field">
-            <label>Base URL（OpenAI / GeminiCLI）</label>
-            <input type="text" readonly id="base-url" onclick="this.select()" value="">
-          </div>
-          <div class="field">
-            <label>Base URL（Vertex AI）</label>
-            <input type="text" readonly id="vertex-url" onclick="this.select()" value="">
-          </div>
-          <div class="field">
-            <label>API Key（密码）</label>
-            <input type="text" readonly id="api-key-display" onclick="this.select()" value="••••••">
-          </div>
-        </div>
-      </div>
-
-      <!-- CREDENTIALS PAGE -->
-      <div class="page" id="page-credentials">
+    <!-- ===== CREDENTIALS TAB ===== -->
+    <div id="tab-creds" class="tab-panel">
+      <div class="card" style="padding:16px 20px">
         <div class="toolbar">
-          <button class="btn-primary btn-sm" onclick="openUploadModal()">⬆ 上传凭证</button>
-          <button class="btn-secondary btn-sm" onclick="loadCredentials()">🔄 刷新</button>
-          <button class="btn-secondary btn-sm" onclick="batchGetEmails()">📧 批量获取邮箱</button>
-          <div class="toolbar-right">
-            <input type="text" class="search-input" placeholder="搜索..." oninput="filterCredentials(this.value)">
-            <button class="btn-danger btn-sm" onclick="batchDelete()">🗑 批量删除</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadCreds()">&#128260; &#21047;&#26032;</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadAll()">&#128230; &#25171;&#21253;&#19979;&#36733;</button>
+          <button class="btn btn-secondary btn-sm" onclick="refreshAllEmails()">&#128231; &#21047;&#26032;&#25152;&#26377;&#37038;&#31665;</button>
+          <button class="btn btn-secondary btn-sm" onclick="deduplicateEmails()">&#128269; &#37038;&#31665;&#21435;&#37325;</button>
+          <div class="toolbar-sep"></div>
+          <button class="btn btn-success btn-sm" onclick="batchAction('enable')">&#9989; &#25209;&#37327;&#21551;&#29992;</button>
+          <button class="btn btn-danger btn-sm" onclick="batchAction('disable')">&#128683; &#25209;&#37327;&#31105;&#29992;</button>
+          <button class="btn btn-danger btn-sm" onclick="batchAction('delete')">&#128465; &#25209;&#37327;&#21024;&#38500;</button>
+          <button class="btn btn-secondary btn-sm" onclick="batchAction('verify')">&#128270; &#25209;&#37327;&#26816;&#39564;</button>
+        </div>
+        <div class="filter-bar">
+          <label>&#29366;&#24577;:</label>
+          <select id="fStatus" onchange="loadCreds(true)">
+            <option value="all">&#20840;&#37096;</option>
+            <option value="enabled">&#27491;&#24120;</option>
+            <option value="disabled">&#31105;&#29992;</option>
+          </select>
+          <label>&#38169;&#35823;&#30721;:</label>
+          <select id="fError" onchange="loadCreds(true)">
+            <option value="all">&#20840;&#37096;</option>
+            <option value="400">400</option>
+            <option value="403">403</option>
+            <option value="429">429</option>
+          </select>
+          <label>&#20919;&#21204;:</label>
+          <select id="fCooldown" onchange="loadCreds(true)">
+            <option value="all">&#20840;&#37096;</option>
+            <option value="in_cooldown">&#20919;&#21204;&#20013;</option>
+            <option value="no_cooldown">&#26080;&#20919;&#21204;</option>
+          </select>
+          <label>Preview:</label>
+          <select id="fPreview" onchange="loadCreds(true)">
+            <option value="all">&#20840;&#37096;</option>
+            <option value="preview">&#24050;&#21551;&#29992;</option>
+            <option value="no_preview">&#26410;&#21551;&#29992;</option>
+          </select>
+          <label>&#27599;&#39029;:</label>
+          <select id="fPageSize" onchange="loadCreds(true)">
+            <option value="20">20</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
+        <div id="batchBar" class="batch-bar hidden">
+          <span id="batchCount">&#24050;&#36873; 0 &#39033;</span>
+          <button class="btn btn-xs btn-secondary" onclick="selectAllRows()">&#20840;&#36873;&#24403;&#39029;</button>
+          <button class="btn btn-xs btn-secondary" onclick="deselectAll()">&#21462;&#28040;&#36873;&#25321;</button>
+        </div>
+        <div style="color:var(--text-dim);font-size:12px;margin-bottom:8px" id="credsSummary"></div>
+        <div class="table-wrap">
+          <table id="credsTable">
+            <thead><tr>
+              <th><input type="checkbox" id="selectAllChk" onchange="toggleSelectAll(this.checked)"></th>
+              <th>&#25991;&#20214;&#21517;</th>
+              <th>&#37038;&#31665;</th>
+              <th>Project ID</th>
+              <th>&#29366;&#24577;</th>
+              <th>Preview</th>
+              <th>&#38169;&#35823;&#30721;</th>
+              <th>&#25805;&#20316;</th>
+            </tr></thead>
+            <tbody id="credsBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="credsPagination"></div>
+      </div>
+    </div>
+
+    <!-- ===== OAUTH TAB ===== -->
+    <div id="tab-oauth" class="tab-panel">
+      <div class="card">
+        <div class="card-title">&#128272; OAuth &#35748;&#35777;&#27969;&#31243;</div>
+        <div class="oauth-steps">
+          <div class="step-item">
+            <div class="step-circle active" id="sc1">1</div>
+            <div class="step-label active" id="sl1">&#37197;&#32622;</div>
+          </div>
+          <div class="step-line" id="sline1"></div>
+          <div class="step-item">
+            <div class="step-circle" id="sc2">2</div>
+            <div class="step-label" id="sl2">&#25480;&#26435;</div>
+          </div>
+          <div class="step-line" id="sline2"></div>
+          <div class="step-item">
+            <div class="step-circle" id="sc3">3</div>
+            <div class="step-label" id="sl3">&#33719;&#21462;&#20449;&#35777;</div>
+          </div>
+          <div class="step-line" id="sline3"></div>
+          <div class="step-item">
+            <div class="step-circle" id="sc4">4</div>
+            <div class="step-label" id="sl4">&#23436;&#25104;</div>
           </div>
         </div>
-        <div class="card">
-          <div class="table-wrap">
-            <table id="cred-table">
-              <thead>
-                <tr>
-                  <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this.checked)"></th>
-                  <th>文件名</th>
-                  <th>邮箱</th>
-                  <th>项目ID</th>
-                  <th>状态</th>
-                  <th>错误次数</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="cred-tbody"></tbody>
-            </table>
+        <!-- Step 1 -->
+        <div id="oauthStep1">
+          <div class="form-group">
+            <label class="form-label">&#25480;&#26435;&#26041;&#24335;</label>
+            <select id="oauthMode" class="form-control">
+              <option value="auto">&#33258;&#21160;&#27169;&#24335; (&#33258;&#21160;&#36650;&#35775;&#22238;&#35843;)</option>
+              <option value="manual-code">&#25163;&#21160;&#27169;&#24335; (&#22797;&#21046;&#25480;&#26435;&#30721;)</option>
+              <option value="manual-url">&#25163;&#21160;&#27169;&#24335; (&#23436;&#25972;&#22238;&#35843;URL)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Project ID <span style="color:var(--text-muted)">(&#21487;&#36873;&#65292;&#30041;&#31354;&#33258;&#21160;&#26816;&#27979;)</span></label>
+            <input type="text" id="oauthProjectId" class="form-control" placeholder="&#22914;: my-gcp-project-123">
+          </div>
+          <button class="btn btn-primary" onclick="oauthStart()">&#33719;&#21462;&#25480;&#26435;&#38142;&#25509;</button>
+        </div>
+        <!-- Step 2 -->
+        <div id="oauthStep2" style="display:none">
+          <div class="alert alert-info">&#9989; &#25480;&#26435;&#38142;&#25509;&#24050;&#29983;&#25104;&#65292;&#35831;&#28857;&#20987;&#38142;&#25509;&#23436;&#25104; Google &#36134;&#21495;&#25480;&#26435;</div>
+          <div class="url-display" style="margin-bottom:14px">
+            <span class="url-text" id="oauthAuthUrl"></span>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="openAuthUrl()">&#128279; &#22312;&#26032;&#26631;&#31614;&#39029;&#25171;&#24320;</button>
+            <button class="btn btn-secondary" onclick="copyText(document.getElementById('oauthAuthUrl').textContent)">&#128203; &#22797;&#21046;&#38142;&#25509;</button>
+          </div>
+          <div id="autoPollInfo" style="display:none">
+            <div class="alert alert-info" style="align-items:center">
+              <span class="spinner"></span>
+              <span style="margin-left:8px">&#33258;&#21160;&#36650;&#35775;&#20013;... &#31561;&#24453;&#25480;&#26435;&#23436;&#25104; <strong id="pollCounter">0</strong>s</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary" onclick="oauthGoStep3()">&#24050;&#23436;&#25104;&#25480;&#26435;&#65292;&#19979;&#19968;&#27493; &#8594;</button>
+        </div>
+        <!-- Step 3 -->
+        <div id="oauthStep3" style="display:none">
+          <div id="step3Auto" style="display:none">
+            <div class="alert alert-info" style="margin-bottom:12px">
+              <span class="spinner"></span>
+              <span style="margin-left:8px">&#33258;&#21160;&#27169;&#24335;&#65306;&#26381;&#21153;&#22120;&#24050;&#26816;&#27979;&#21040;&#25480;&#26435;&#65292;&#25110;&#24202;&#20837;&#25480;&#26435;&#30721;</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">&#25163;&#21160;&#36755;&#20837;&#25480;&#26435;&#30721;&#65288;&#21487;&#36873;&#65289;</label>
+              <input type="text" id="oauthCodeAuto" class="form-control" placeholder="4/xxxx... (&#21487;&#36873;)">
+            </div>
+          </div>
+          <div id="step3ManualCode" style="display:none">
+            <div class="form-group">
+              <label class="form-label">&#25480;&#26435;&#30721;</label>
+              <input type="text" id="oauthCode" class="form-control" placeholder="&#31896;&#36149; Google &#36820;&#22238;&#30340;&#25480;&#26435;&#30721; 4/xxxx...">
+            </div>
+          </div>
+          <div id="step3ManualUrl" style="display:none">
+            <div class="form-group">
+              <label class="form-label">&#23436;&#25972;&#22238;&#35843; URL</label>
+              <input type="text" id="oauthCallbackUrl" class="form-control" placeholder="&#31896;&#36149;&#27983;&#35272;&#22120;&#22320;&#22336;&#26639;&#20013;&#23436;&#25972;&#30340;&#22238;&#35843; URL">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Project ID <span style="color:var(--text-muted)">(&#21487;&#36873;)</span></label>
+            <input type="text" id="oauthProjectId2" class="form-control" placeholder="&#30041;&#31354;&#20351;&#29992;&#27493;&#39588;1&#20013;&#30340;&#20540;">
+          </div>
+          <button class="btn btn-primary" onclick="oauthGetCredential()">&#128273; &#33719;&#21462;&#20449;&#35777;</button>
+        </div>
+        <!-- Step 4 -->
+        <div id="oauthStep4" style="display:none">
+          <div class="alert alert-success">&#127881; &#25480;&#26435;&#25104;&#21151;&#65281;&#20449;&#35777;&#24050;&#20445;&#23384;</div>
+          <div id="oauthCredInfo"></div>
+          <div id="oauthProjectSelect" style="display:none">
+            <div class="divider"></div>
+            <div style="font-weight:600;margin-bottom:10px">&#26816;&#27979;&#21040;&#22810;&#20010;&#39033;&#30446;&#65292;&#35831;&#36873;&#25321;&#65306;</div>
+            <div id="projectList"></div>
+            <button class="btn btn-primary" style="margin-top:10px" onclick="selectProject()">&#30830;&#35748;&#36873;&#25321;</button>
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn btn-secondary" onclick="oauthReset()">&#128260; &#37325;&#26032;&#24320;&#22987;</button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- AUTH PAGE -->
-      <div class="page" id="page-auth">
-        <div class="card">
-          <div class="card-title">🔐 OAuth 认证流程</div>
-          <p style="color:var(--text-dim);margin-bottom:16px;font-size:13px">通过 Google OAuth 获取新的 GeminiCLI 凭证。整个流程仅需在浏览器完成，无需命令行工具。</p>
-          <div class="steps">
-            <div class="step active" id="step1"><div class="num">1</div><div class="label">获取授权链接</div></div>
-            <div class="step" id="step2"><div class="num">2</div><div class="label">Google授权</div></div>
-            <div class="step" id="step3"><div class="num">3</div><div class="label">输入授权码</div></div>
-            <div class="step" id="step4"><div class="num">4</div><div class="label">完成</div></div>
-          </div>
+    <!-- ===== UPLOAD TAB ===== -->
+    <div id="tab-upload" class="tab-panel">
+      <div class="card">
+        <div class="card-title">&#11014; &#25209;&#37327;&#19978;&#20256;&#20449;&#35777;&#25991;&#20214;</div>
+        <div class="upload-zone" id="uploadZone"
+          onclick="document.getElementById('fileInput').click()"
+          ondragover="onDragOver(event)"
+          ondragleave="onDragLeave(event)"
+          ondrop="onDrop(event)">
+          <div class="upload-icon">&#128193;</div>
+          <div class="upload-text">&#28857;&#20987;&#36873;&#25321;&#25991;&#20214;&#25110;&#25308;&#30333;&#21040;&#27492;&#22788;</div>
+          <div class="upload-hint">&#25903;&#25345; .json &#26684;&#24335;&#20449;&#35777;&#25991;&#20214;&#65292;&#21487;&#22810;&#36873;</div>
+        </div>
+        <input type="file" id="fileInput" multiple accept=".json" style="display:none" onchange="onFileSelect(event)">
+        <div class="file-list" id="fileList"></div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <button class="btn btn-primary" id="uploadBtn" onclick="doUpload()" disabled>&#11014; &#24320;&#22987;&#19978;&#20256;</button>
+          <button class="btn btn-secondary" onclick="clearFiles()">&#128465; &#28165;&#31354;</button>
+        </div>
+        <div id="uploadProgress" style="margin-top:12px;display:none">
+          <div class="alert alert-info"><span class="spinner"></span> <span style="margin-left:8px">&#19978;&#20256;&#20013;...</span></div>
+        </div>
+        <div id="uploadResults" style="margin-top:12px"></div>
+      </div>
+    </div>
 
-          <!-- Step 1 -->
-          <div id="auth-step1">
-            <div class="form-grid">
-              <div class="field">
-                <label>凭证模式</label>
-                <select id="auth-mode">
-                  <option value="geminicli">GeminiCLI</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Google Cloud 项目ID（可选，授权后自动获取）</label>
-                <input type="text" id="auth-project-id" placeholder="my-project-id">
-              </div>
-            </div>
-            <button class="btn-primary" style="width:auto" onclick="startAuth()">获取授权链接 →</button>
-          </div>
-
-          <!-- Step 2 -->
-          <div id="auth-step2" style="display:none">
-            <p style="color:var(--text-dim);margin-bottom:10px;font-size:13px">请点击下面的链接，在 Google 登录页面完成授权。授权完成后，页面会显示一个授权码。</p>
-            <div class="auth-url-box" id="auth-url-display"></div>
-            <div style="display:flex;gap:8px;margin-top:12px">
-              <button class="btn-primary" style="width:auto" onclick="openAuthUrl()">在新标签页打开 →</button>
-              <button class="btn-secondary btn-sm" onclick="copyAuthUrl()">📋 复制链接</button>
-              <button class="btn-secondary btn-sm" onclick="authStep(3)">下一步 →</button>
-            </div>
-          </div>
-
-          <!-- Step 3 -->
-          <div id="auth-step3" style="display:none">
-            <p style="color:var(--text-dim);margin-bottom:10px;font-size:13px">将 Google 页面显示的授权码粘贴到下方，然后点击"完成授权"。</p>
-            <div class="field">
-              <label>授权码</label>
-              <input type="text" id="auth-code" placeholder="4/0XXXXXXXX...">
-            </div>
-            <div class="field">
-              <label>项目ID（可选，留空则使用步骤1填写的值）</label>
-              <input type="text" id="auth-code-project" placeholder="my-project-id">
-            </div>
-            <button class="btn-primary" style="width:auto" onclick="exchangeCode()">完成授权 ✓</button>
-          </div>
-
-          <!-- Step 4 -->
-          <div id="auth-step4" style="display:none">
-            <div style="text-align:center;padding:20px">
-              <div style="font-size:48px;margin-bottom:12px">✅</div>
-              <div style="font-size:16px;font-weight:600;margin-bottom:6px">授权成功！</div>
-              <div style="color:var(--text-dim)" id="auth-result-info"></div>
-              <div style="margin-top:20px;display:flex;gap:8px;justify-content:center">
-                <button class="btn-secondary" onclick="authReset()">继续添加</button>
-                <button class="btn-primary" onclick="switchPage('credentials')">查看凭证列表</button>
-              </div>
-            </div>
-          </div>
+    <!-- ===== CONFIG TAB ===== -->
+    <div id="tab-config" class="tab-panel">
+      <div class="card">
+        <div class="card-title">&#9881; &#37197;&#32622;&#31649;&#29702;</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <button class="btn btn-primary" onclick="saveConfig()">&#128190; &#20445;&#23384;&#37197;&#32622;</button>
+          <button class="btn btn-secondary" onclick="loadConfig()">&#128260; &#21047;&#26032;</button>
+        </div>
+        <div class="alert alert-warning" style="margin-bottom:14px">
+          &#9888; &#29615;&#22659;&#21464;&#37327;&#38145;&#23450;&#30340;&#37197;&#32622;&#39033;&#26080;&#27861;&#22312;&#27492;&#20462;&#25913;&#65292;&#35831;&#20462;&#25913;&#29615;&#22659;&#21464;&#37327;&#21518;&#37325;&#21551;&#26381;&#21153;&#12290;
+        </div>
+        <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)">
+          <table class="config-table">
+            <thead><tr>
+              <th>&#37197;&#32622;&#39033;</th>
+              <th>&#29615;&#22659;&#38145;&#23450;</th>
+              <th>&#24403;&#21069;&#20540;</th>
+              <th>&#29615;&#22659;&#21464;&#37327;</th>
+            </tr></thead>
+            <tbody id="configBody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- CONFIG PAGE -->
-      <div class="page" id="page-config">
-        <div class="toolbar">
-          <button class="btn-primary btn-sm" onclick="saveConfig()">💾 保存配置</button>
-          <button class="btn-secondary btn-sm" onclick="loadConfig()">🔄 刷新</button>
-        </div>
-        <div class="card">
-          <div class="table-wrap">
-            <table id="config-table">
-              <thead>
-                <tr>
-                  <th>配置项</th>
-                  <th>环境变量锁定</th>
-                  <th>值</th>
-                  <th>环境变量</th>
-                </tr>
-              </thead>
-              <tbody id="config-tbody"></tbody>
-            </table>
+    <!-- ===== LOGS TAB ===== -->
+    <div id="tab-logs" class="tab-panel">
+      <div class="card">
+        <div class="card-title">&#128203; &#23454;&#26102;&#26085;&#24535;</div>
+        <div class="toolbar" style="margin-bottom:12px">
+          <div class="ws-indicator">
+            <div class="ws-dot" id="wsDot"></div>
+            <span id="wsStatus">&#26410;&#36830;&#25509;</span>
           </div>
+          <div class="toolbar-sep"></div>
+          <button class="btn btn-primary btn-sm" onclick="wsConnect()">&#128268; &#36830;&#25509;</button>
+          <button class="btn btn-secondary btn-sm" onclick="wsDisconnect()">&#9209; &#26029;&#24320;</button>
+          <div class="toolbar-sep"></div>
+          <button class="btn btn-secondary btn-sm" onclick="loadLogHistory()">&#128194; &#21152;&#36733;&#21382;&#21490;</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadLogs()">&#8595; &#19979;&#36733;&#26085;&#24535;</button>
+          <button class="btn btn-danger btn-sm" onclick="clearLogs()">&#128465; &#28165;&#31354;&#26085;&#24535;</button>
+          <div class="toolbar-sep"></div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="autoScroll" checked> &#33258;&#21160;&#28378;&#21160;
+          </label>
+          <label style="color:var(--text-dim);font-size:12px">&#32423;&#21035;&#31807;&#36807;:</label>
+          <select id="logLevelFilter" onchange="filterLogs()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:var(--radius-sm);font-size:12px">
+            <option value="all">&#20840;&#37096;</option>
+            <option value="DEBUG">DEBUG</option>
+            <option value="INFO">INFO</option>
+            <option value="WARNING">WARNING</option>
+            <option value="ERROR">ERROR</option>
+            <option value="CRITICAL">CRITICAL</option>
+          </select>
+        </div>
+        <div class="log-output" id="logOutput"></div>
+      </div>
+    </div>
+
+    <!-- ===== INFO TAB ===== -->
+    <div id="tab-info" class="tab-panel">
+      <div class="card">
+        <div class="version-card">
+          <div class="version-num" id="versionNum">--</div>
+          <div class="version-msg" id="versionMsg">-</div>
+          <div class="version-date" id="versionDate"></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px">
+          <button class="btn btn-primary" onclick="checkUpdate()">&#128269; &#26816;&#26597;&#26356;&#26032;</button>
+        </div>
+        <div id="updateInfo"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">&#128279; &#30456;&#20851;&#38142;&#25509;</div>
+        <div class="info-row">
+          <span class="info-label">GitHub &#20179;&#24211;</span>
+          <a href="https://github.com/su-kaka/gcli2api" target="_blank" style="color:var(--accent)">https://github.com/su-kaka/gcli2api</a>
+        </div>
+        <div class="info-row">
+          <span class="info-label">&#39033;&#30446;&#35828;&#26126;</span>
+          <span style="color:var(--text-dim);font-size:13px">Google Gemini CLI API &#20195;&#29702;&#65292;&#25903;&#25345; OpenAI / Gemini / Claude &#19977;&#31278;&#35831;&#27714;&#26684;&#24335;</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">GeminiCLI &#31471;&#28857;</span>
+          <span style="font-family:monospace;font-size:12px;color:var(--text-dim)">cloudcode-pa.googleapis.com</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Vertex AI &#31471;&#28857;</span>
+          <span style="font-family:monospace;font-size:12px;color:var(--text-dim)">aiplatform.googleapis.com</span>
         </div>
       </div>
-
-      <!-- LOGS PAGE -->
-      <div class="page" id="page-logs">
-        <div class="toolbar">
-          <button class="btn-secondary btn-sm" id="ws-btn" onclick="toggleWsLogs()">▶ 启动实时日志</button>
-          <button class="btn-secondary btn-sm" onclick="loadLogs()">📥 加载历史</button>
-          <button class="btn-secondary btn-sm" onclick="downloadLogs()">⬇ 下载日志</button>
-          <button class="btn-danger btn-sm" onclick="clearLogs()">🗑 清空日志</button>
-          <div class="toolbar-right">
-            <label style="margin:0"><input type="checkbox" id="log-autoscroll" checked> 自动滚动</label>
-          </div>
+      <div class="card">
+        <div class="card-title">&#128214; &#24555;&#36895;&#20837;&#38376;</div>
+        <div style="color:var(--text-dim);font-size:13px;line-height:2.2">
+          <p>1. &#22312; <strong style="color:var(--text)">OAuth&#35748;&#35777;</strong> &#26631;&#31614;&#39029;&#20013;&#20351;&#29992; Google &#36134;&#21495;&#23436;&#25104;&#25480;&#26435;&#65292;&#33719;&#21462;&#20449;&#35777;&#25991;&#20214;</p>
+          <p>2. &#25110;&#22312; <strong style="color:var(--text)">&#25209;&#37327;&#19978;&#20256;</strong> &#26631;&#31614;&#39029;&#20013;&#19978;&#20256;&#24050;&#26377;&#30340;&#20449;&#35777; JSON &#25991;&#20214;</p>
+          <p>3. &#22312; <strong style="color:var(--text)">&#20449;&#35777;&#31649;&#29702;</strong> &#26631;&#31614;&#39029;&#20013;&#31649;&#29702;&#21644;&#27979;&#35797;&#21508;&#20449;&#35777;&#29366;&#24577;</p>
+          <p>4. &#20351;&#29992;&#19978;&#26041; <strong style="color:var(--text)">&#25509;&#20837;&#22320;&#22336;</strong> &#20013;&#30340; Base URL &#37197;&#32622;&#24744;&#30340;&#23458;&#25143;&#31471;</p>
+          <p>5. &#22312; <strong style="color:var(--text)">&#37197;&#32622;&#31649;&#29702;</strong> &#26631;&#31614;&#39029;&#20013;&#35843;&#25972;&#26381;&#21153;&#21442;&#25968;</p>
         </div>
-        <div id="log-output"></div>
       </div>
+    </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
+  </div><!-- /content -->
 </div><!-- /app -->
 
-<!-- Notification container -->
-<div id="notification"></div>
-
-<!-- Upload Modal -->
-<div class="modal-overlay" id="upload-modal">
+<!-- CONFIRM MODAL -->
+<div id="confirmModal" class="modal-overlay" style="display:none">
   <div class="modal">
-    <h3>⬆ 上传凭证文件</h3>
-    <p style="color:var(--text-dim);font-size:13px;margin-bottom:16px">支持单个 JSON 文件或包含多个 JSON 的 ZIP 压缩包。</p>
-    <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-      <div class="icon">📁</div>
-      <div>点击选择文件 或 拖拽到此处</div>
-      <div style="font-size:12px;margin-top:4px">支持 .json 和 .zip</div>
-    </div>
-    <input type="file" id="file-input" multiple accept=".json,.zip" style="display:none" onchange="onFileSelected(this)">
-    <div id="upload-file-list" style="margin-top:12px;font-size:12px;color:var(--text-dim)"></div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal('upload-modal')">取消</button>
-      <button class="btn-primary" onclick="doUpload()">上传</button>
+    <div class="modal-title" id="confirmTitle">&#30830;&#35748;&#25805;&#20316;</div>
+    <div class="modal-body" id="confirmBody">&#30830;&#23450;&#35201;&#25191;&#34892;&#27492;&#25805;&#20316;&#21527;&#65311;</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeConfirm(false)">&#21462;&#28040;</button>
+      <button class="btn btn-danger" onclick="closeConfirm(true)">&#30830;&#35748;</button>
     </div>
   </div>
 </div>
-
-<!-- Delete Confirm Modal -->
-<div class="modal-overlay" id="delete-modal">
-  <div class="modal">
-    <h3>⚠ 确认删除</h3>
-    <p style="color:var(--text-dim);font-size:13px;margin:12px 0" id="delete-msg"></p>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal('delete-modal')">取消</button>
-      <button class="btn-danger" onclick="confirmDelete()">确认删除</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ===========================
+// ============================================================
 // STATE
-// ===========================
-let token = localStorage.getItem('panel_token') || '';
-let credentialsData = [];
-let selectedFiles = [];
-let pendingDeleteFn = null;
-let wsConn = null;
-let authUrl = '';
-let authMode = 'geminicli';
+// ============================================================
+var token = localStorage.getItem('panel_token') || '';
+var credsOffset = 0;
+var credsTotal = 0;
+var selectedFilesUpload = [];
+var ws = null;
+var oauthState = null;
+var oauthModeVal = 'auto';
+var oauthPollTimer = null;
+var oauthPollSec = 0;
+var allLogLines = [];
+var configData = {};
+var envLocked = [];
+var confirmResolve = null;
 
-// ===========================
+// ============================================================
 // INIT
-// ===========================
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('login-password').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-  if (token) tryAutoLogin();
-  updateBaseUrls();
-});
-
-function updateBaseUrls() {
-  const base = window.location.origin;
-  document.getElementById('base-url').value = base + '/v1';
-  document.getElementById('vertex-url').value = base + '/vertex/v1';
-}
-
-async function tryAutoLogin() {
-  try {
-    const r = await api('GET', '/panel/status');
-    if (r.status === 'ok') showApp();
-    else { token = ''; localStorage.removeItem('panel_token'); }
-  } catch { token = ''; localStorage.removeItem('panel_token'); }
-}
-
-// ===========================
-// AUTH
-// ===========================
-async function doLogin() {
-  const pwd = document.getElementById('login-password').value;
-  document.getElementById('login-error').textContent = '';
-  try {
-    const r = await fetch('/panel/login', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({password: pwd})
+// ============================================================
+(function init(){
+  if(token){
+    verifyToken().then(function(ok){
+      if(ok) showApp();
+      else { token=''; localStorage.removeItem('panel_token'); }
     });
-    const data = await r.json();
-    if (data.success) {
-      token = data.token;
-      localStorage.setItem('panel_token', token);
+  }
+})();
+
+async function verifyToken(){
+  try{
+    var r = await fetch('/panel/status',{headers:{'Authorization':'Bearer '+token}});
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+function showApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('app').style.display='flex';
+  loadStatus();
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+async function doLogin(){
+  var pwd = document.getElementById('loginPwd').value;
+  if(!pwd){ document.getElementById('loginErr').textContent='请输入密码'; return; }
+  document.getElementById('loginErr').textContent='';
+  try{
+    var r = await fetch('/panel/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pwd})
+    });
+    var d = await r.json();
+    if(r.ok && d.token){
+      token=d.token;
+      localStorage.setItem('panel_token',token);
       showApp();
     } else {
-      document.getElementById('login-error').textContent = '密码错误';
+      document.getElementById('loginErr').textContent = d.detail||d.message||'密码错误';
     }
-  } catch(e) {
-    document.getElementById('login-error').textContent = '连接失败: ' + e.message;
+  }catch(e){
+    document.getElementById('loginErr').textContent='连接失败: '+e.message;
   }
 }
 
-function doLogout() {
-  token = '';
+function doLogout(){
+  token='';
   localStorage.removeItem('panel_token');
-  stopWsLogs();
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-password').value = '';
+  wsDisconnect();
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('loginPwd').value='';
 }
 
-function showApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  loadStatusPage();
-}
-
-// ===========================
-// NAVIGATION
-// ===========================
-function switchPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  document.querySelector(`[data-page="${name}"]`).classList.add('active');
-  if (name === 'status') loadStatusPage();
-  else if (name === 'credentials') loadCredentials();
-  else if (name === 'config') loadConfig();
-  else if (name === 'logs') loadLogs();
-}
-
-// ===========================
+// ============================================================
 // API HELPER
-// ===========================
-async function api(method, path, body, isFormData) {
-  const opts = {
-    method,
-    headers: {'Authorization': 'Bearer ' + token}
-  };
-  if (body && !isFormData) {
-    opts.headers['Content-Type'] = 'application/json';
-    opts.body = JSON.stringify(body);
-  } else if (body && isFormData) {
-    opts.body = body;
+// ============================================================
+async function api(method, path, body, isForm){
+  var opts={method:method, headers:{'Authorization':'Bearer '+token}};
+  if(body && !isForm){
+    opts.headers['Content-Type']='application/json';
+    opts.body=JSON.stringify(body);
+  } else if(isForm){
+    opts.body=body;
   }
-  const r = await fetch(path, opts);
-  if (r.status === 401) { doLogout(); throw new Error('未授权'); }
-  const ct = r.headers.get('content-type') || '';
-  if (ct.includes('application/json')) return r.json();
+  var r = await fetch(path,opts);
+  if(r.status===401){ doLogout(); throw new Error('Token expired'); }
   return r;
 }
 
-// ===========================
-// STATUS PAGE
-// ===========================
-async function loadStatusPage() {
-  try {
-    const data = await api('GET', '/panel/status');
-    document.getElementById('stat-total').textContent = data.credentials?.geminicli ?? '-';
-    document.getElementById('stat-enabled').textContent = data.credentials?.enabled ?? '-';
-    document.getElementById('stat-disabled').textContent = data.credentials?.disabled ?? '-';
-    document.getElementById('stat-backend').textContent = data.backend?.backend_type ?? '-';
-    document.getElementById('status-dot').className = 'status-dot';
-    document.getElementById('status-text').textContent = '在线';
-  } catch(e) {
-    document.getElementById('status-dot').className = 'status-dot red';
-    document.getElementById('status-text').textContent = '离线';
+async function apiJSON(method, path, body){
+  var r = await api(method,path,body);
+  var d = await r.json();
+  if(!r.ok) throw new Error(d.detail||d.message||'Request failed ('+r.status+')');
+  return d;
+}
+
+// ============================================================
+// TAB SWITCH
+// ============================================================
+function switchTab(name, el){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+name).classList.add('active');
+  el.classList.add('active');
+  if(name==='status') loadStatus();
+  if(name==='creds') loadCreds();
+  if(name==='config') loadConfig();
+  if(name==='info') loadVersion();
+}
+
+// ============================================================
+// STATUS TAB
+// ============================================================
+var ENDPOINTS = [
+  {method:'GET',path:'/v1/models',desc:'列出 GeminiCLI 可用模型'},
+  {method:'POST',path:'/v1/chat/completions',desc:'OpenAI 格式聊天 (GeminiCLI)'},
+  {method:'POST',path:'/v1/messages',desc:'Claude 格式聊天 (GeminiCLI)'},
+  {method:'POST',path:'/v1/generateContent',desc:'Gemini 格式生成 (GeminiCLI)'},
+  {method:'GET',path:'/vertex/v1/models',desc:'列出 Vertex AI 可用模型'},
+  {method:'POST',path:'/vertex/v1/chat/completions',desc:'OpenAI 格式聊天 (Vertex AI)'},
+  {method:'POST',path:'/vertex/v1/messages',desc:'Claude 格式聊天 (Vertex AI)'},
+  {method:'POST',path:'/vertex/v1/generateContent',desc:'Gemini 格式生成 (Vertex AI)'},
+  {method:'GET',path:'/panel/status',desc:'系统状态'},
+  {method:'POST',path:'/panel/login',desc:'登录获取 Token'},
+  {method:'GET',path:'/panel/credentials/status',desc:'凭证列表'},
+  {method:'POST',path:'/panel/credentials/action',desc:'凭证操作 (启用/禁用/删除)'},
+  {method:'POST',path:'/panel/credentials/batch',desc:'批量凭证操作'},
+  {method:'POST',path:'/panel/credentials/upload',desc:'批量上传凭证'},
+  {method:'GET',path:'/panel/credentials/download-all',desc:'打包下载所有凭证'},
+  {method:'POST',path:'/panel/credentials/email',desc:'获取凭证邮箱'},
+  {method:'POST',path:'/panel/credentials/refresh-all-emails',desc:'刷新所有邮箱'},
+  {method:'POST',path:'/panel/credentials/deduplicate-by-email',desc:'邮箱去重'},
+  {method:'POST',path:'/panel/credentials/{fn}/verify-project',desc:'检验 Project ID'},
+  {method:'POST',path:'/panel/credentials/{fn}/configure-preview',desc:'设置 Preview'},
+  {method:'POST',path:'/panel/credentials/test/{fn}',desc:'测试凭证'},
+  {method:'GET',path:'/panel/credentials/{fn}/download',desc:'下载单个凭证'},
+  {method:'POST',path:'/panel/auth/start',desc:'开始 OAuth 授权'},
+  {method:'POST',path:'/panel/auth/exchange',desc:'换取凭证 (授权码)'},
+  {method:'POST',path:'/panel/auth/callback',desc:'换取凭证 (回调URL)'},
+  {method:'GET',path:'/panel/auth/status/{state}',desc:'查询授权状态'},
+  {method:'GET',path:'/panel/config',desc:'获取配置'},
+  {method:'POST',path:'/panel/config/save',desc:'保存配置'},
+  {method:'GET',path:'/panel/logs',desc:'获取历史日志'},
+  {method:'DELETE',path:'/panel/logs',desc:'清空日志'},
+  {method:'GET',path:'/panel/logs/download',desc:'下载日志文件'},
+  {method:'WS',path:'/panel/ws/logs',desc:'实时日志 WebSocket'},
+  {method:'GET',path:'/panel/version',desc:'版本信息'},
+];
+
+async function loadStatus(){
+  try{
+    var d = await apiJSON('GET','/panel/status');
+    var c = d.credentials||{};
+    document.getElementById('statTotal').textContent = c.geminicli!==undefined ? c.geminicli : (c.total||'-');
+    document.getElementById('statEnabled').textContent = c.enabled!==undefined ? c.enabled : '-';
+    document.getElementById('statDisabled').textContent = c.disabled!==undefined ? c.disabled : '-';
+    var b = d.backend||d.storage||{};
+    document.getElementById('statBackend').textContent = b.backend_type||b.type||d.backend_type||'-';
+    var base = window.location.origin;
+    document.getElementById('gcliUrl').textContent = base+'/v1';
+    document.getElementById('vertexUrl').textContent = base+'/vertex/v1';
+    try{
+      var cfg = await apiJSON('GET','/panel/config');
+      var pw = (cfg.config||cfg||{}).API_PASSWORD||'';
+      document.getElementById('apiPwdDisplay').dataset.real=pw;
+    }catch(e){}
+  }catch(e){ toast('error','加载状态失败',e.message); }
+  renderEndpoints();
+}
+
+function renderEndpoints(){
+  var el = document.getElementById('endpointList');
+  el.innerHTML = ENDPOINTS.map(function(e){
+    var cls='badge-method-'+(e.method.toLowerCase());
+    return '<div class="endpoint-item"><span class="badge '+cls+'">'+e.method+'</span>'
+      +'<span class="endpoint-path">'+escHtml(e.path)+'</span>'
+      +'<span class="endpoint-desc">'+escHtml(e.desc)+'</span></div>';
+  }).join('');
+}
+
+function toggleApiPwd(){
+  var el = document.getElementById('apiPwdDisplay');
+  var btn = document.getElementById('apiPwdToggleBtn');
+  if(el.type==='password'){
+    el.type='text'; el.value=el.dataset.real||'(未配置)'; btn.textContent='隐藏';
+  } else {
+    el.type='password'; el.value='••••••••'; btn.textContent='显示';
   }
 }
 
-// ===========================
-// CREDENTIALS PAGE
-// ===========================
-async function loadCredentials() {
-  try {
-    const data = await api('GET', '/panel/credentials');
-    credentialsData = data.credentials || [];
-    renderCredentials(credentialsData);
-  } catch(e) {
-    notify('error', '加载凭证失败: ' + e.message);
+// ============================================================
+// CREDENTIALS TAB
+// ============================================================
+async function loadCreds(resetPage){
+  if(resetPage) credsOffset=0;
+  var status=document.getElementById('fStatus').value;
+  var error=document.getElementById('fError').value;
+  var cooldown=document.getElementById('fCooldown').value;
+  var preview=document.getElementById('fPreview').value;
+  var limit=parseInt(document.getElementById('fPageSize').value);
+  var url='/panel/credentials/status?offset='+credsOffset+'&limit='+limit
+    +'&status_filter='+status+'&error_code_filter='+error
+    +'&cooldown_filter='+cooldown+'&preview_filter='+preview;
+  try{
+    var d = await apiJSON('GET',url);
+    credsTotal = d.total||0;
+    renderCredTable(d.items||[]);
+    renderCredStats(d.stats||d);
+    renderPagination(d,limit);
+  }catch(e){ toast('error','加载凭证失败',e.message); }
+}
+
+function renderCredStats(s){
+  var t=s.total||credsTotal, en=s.enabled!==undefined?s.enabled:(s.normal||'-'), di=s.disabled!==undefined?s.disabled:'-';
+  document.getElementById('credsSummary').textContent='共 '+t+' 条 | 正常: '+en+' | 禁用: '+di;
+}
+
+function renderCredTable(items){
+  var tbody=document.getElementById('credsBody');
+  if(!items.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:32px">暂无凭证</td></tr>';
+    return;
+  }
+  tbody.innerHTML=items.map(function(item){
+    var fn=escHtml(item.filename||'');
+    var fnRaw=String(item.filename||'').replace(/'/g,"\\'");
+    var statusBadge=item.disabled
+      ?'<span class="badge badge-red">禁用</span>'
+      :'<span class="badge badge-green">正常</span>';
+    var previewBadge=item.preview
+      ?'<span class="badge badge-blue">&#10003;</span>'
+      :'<span style="color:var(--text-muted)">-</span>';
+    var errCode=item.error_code||item.last_error_code||'';
+    var errBadge=errCode
+      ?'<span class="badge '+(errCode==429?'badge-yellow':errCode==403?'badge-red':'badge-gray')+'">'+escHtml(String(errCode))+'</span>'
+      :'<span style="color:var(--text-muted)">-</span>';
+    var enableBtn=item.disabled
+      ?'<button class="btn btn-xs btn-success" onclick="credAction(\''+fnRaw+'\',\'enable\')">启用</button>'
+      :'<button class="btn btn-xs btn-danger" onclick="credAction(\''+fnRaw+'\',\'disable\')">禁用</button>';
+    var email=escHtml(item.email||item.user_email||'');
+    var projId=escHtml(item.project_id||'-');
+    return '<tr>'
+      +'<td><input type="checkbox" class="row-chk" value="'+fn+'" onchange="updateBatchBar()"></td>'
+      +'<td><span class="td-filename" title="'+fn+'">'+fn+'</span></td>'
+      +'<td><span class="td-email" title="'+email+'">'+(email||'<span style="color:var(--text-muted)">未知</span>')+'</span></td>'
+      +'<td><span style="font-size:11px;font-family:monospace;color:var(--text-dim)">'+projId+'</span></td>'
+      +'<td>'+statusBadge+'</td>'
+      +'<td>'+previewBadge+'</td>'
+      +'<td>'+errBadge+'</td>'
+      +'<td><div class="td-actions">'
+        +enableBtn
+        +'<button class="btn btn-xs btn-secondary" title="获取邮箱" onclick="getEmail(\''+fnRaw+'\')">&#128231;</button>'
+        +'<button class="btn btn-xs btn-secondary" title="检验Project" onclick="verifyProject(\''+fnRaw+'\')">&#128269;</button>'
+        +'<button class="btn btn-xs btn-secondary" title="Preview切换" onclick="togglePreview(\''+fnRaw+'\','+(!item.preview)+')">&#128065;</button>'
+        +'<button class="btn btn-xs btn-secondary" title="测试" onclick="testCred(\''+fnRaw+'\')">&#129514;</button>'
+        +'<button class="btn btn-xs btn-secondary" title="下载" onclick="downloadCred(\''+fnRaw+'\')">&#8595;</button>'
+        +'<button class="btn btn-xs btn-danger" title="删除" onclick="credAction(\''+fnRaw+'\',\'delete\')">&#128465;</button>'
+      +'</div></td>'
+      +'</tr>';
+  }).join('');
+  updateBatchBar();
+}
+
+function renderPagination(d, limit){
+  var el=document.getElementById('credsPagination');
+  var total=d.total||0;
+  var pages=Math.max(1,Math.ceil(total/limit));
+  var cur=Math.floor(credsOffset/limit);
+  var html='<span class="page-info">共 '+total+' 条，第 '+(cur+1)+'/'+pages+' 页</span>';
+  html+='<button class="page-btn" onclick="gotoPage(0)" '+(cur==0?'disabled':'')+'>&#171;</button>';
+  html+='<button class="page-btn" onclick="gotoPage('+(cur-1)+')" '+(cur==0?'disabled':'')+'>&#8249;</button>';
+  var start=Math.max(0,cur-2), end=Math.min(pages-1,cur+2);
+  for(var i=start;i<=end;i++){
+    html+='<button class="page-btn '+(i==cur?'active':'')+'" onclick="gotoPage('+i+')">'+(i+1)+'</button>';
+  }
+  html+='<button class="page-btn" onclick="gotoPage('+(cur+1)+')" '+(cur>=pages-1?'disabled':'')+'>&#8250;</button>';
+  html+='<button class="page-btn" onclick="gotoPage('+(pages-1)+')" '+(cur>=pages-1?'disabled':'')+'>&#187;</button>';
+  el.innerHTML=html;
+}
+
+function gotoPage(p){
+  var limit=parseInt(document.getElementById('fPageSize').value);
+  var pages=Math.max(1,Math.ceil(credsTotal/limit));
+  p=Math.max(0,Math.min(pages-1,p));
+  credsOffset=p*limit;
+  loadCreds();
+}
+
+function toggleSelectAll(checked){
+  document.querySelectorAll('.row-chk').forEach(function(c){c.checked=checked;});
+  updateBatchBar();
+}
+
+function selectAllRows(){
+  document.querySelectorAll('.row-chk').forEach(function(c){c.checked=true;});
+  document.getElementById('selectAllChk').checked=true;
+  updateBatchBar();
+}
+
+function deselectAll(){
+  document.querySelectorAll('.row-chk').forEach(function(c){c.checked=false;});
+  document.getElementById('selectAllChk').checked=false;
+  updateBatchBar();
+}
+
+function updateBatchBar(){
+  var cnt=document.querySelectorAll('.row-chk:checked').length;
+  var bar=document.getElementById('batchBar');
+  if(cnt>0) bar.classList.remove('hidden'); else bar.classList.add('hidden');
+  document.getElementById('batchCount').textContent='已选 '+cnt+' 项';
+}
+
+function getSelected(){
+  return Array.from(document.querySelectorAll('.row-chk:checked')).map(function(c){return c.value;});
+}
+
+async function credAction(filename, action){
+  if(action==='delete'){
+    var ok=await confirm2('确认删除','确定要删除凭证 '+filename+' 吗？此操作不可撤销。');
+    if(!ok) return;
+  }
+  try{
+    var d=await apiJSON('POST','/panel/credentials/action',{filename:filename,action:action});
+    toast('success','操作成功',d.message||action+' 成功');
+    loadCreds();
+  }catch(e){ toast('error','操作失败',e.message); }
+}
+
+async function batchAction(action){
+  var fns=getSelected();
+  if(!fns.length){ toast('warning','提示','请先选择要操作的凭证'); return; }
+  if(action==='delete'){
+    var ok=await confirm2('批量删除','确定要删除选中的 '+fns.length+' 个凭证吗？此操作不可撤销。');
+    if(!ok) return;
+  } else if(action==='disable'){
+    var ok2=await confirm2('批量禁用','确定要禁用选中的 '+fns.length+' 个凭证吗？');
+    if(!ok2) return;
+  }
+  try{
+    var d=await apiJSON('POST','/panel/credentials/batch',{action:action,filenames:fns});
+    toast('success','批量操作完成',d.message||('成功 '+d.success_count+'/'+d.total_count));
+    deselectAll();
+    loadCreds();
+  }catch(e){ toast('error','批量操作失败',e.message); }
+}
+
+async function getEmail(filename){
+  try{
+    var d=await apiJSON('POST','/panel/credentials/email',{filename:filename});
+    toast('info','邮箱信息',d.user_email||d.email||'未获取到邮箱');
+    loadCreds();
+  }catch(e){ toast('error','获取邮箱失败',e.message); }
+}
+
+async function verifyProject(filename){
+  try{
+    var d=await apiJSON('POST','/panel/credentials/'+encodeURIComponent(filename)+'/verify-project');
+    if(d.success) toast('success','检验成功','Project: '+d.project_id);
+    else toast('warning','检验结果',d.message||'未通过');
+    loadCreds();
+  }catch(e){ toast('error','检验失败',e.message); }
+}
+
+async function togglePreview(filename, enable){
+  try{
+    var d=await apiJSON('POST','/panel/credentials/'+encodeURIComponent(filename)+'/configure-preview',{preview:enable});
+    toast('success','Preview设置',d.message||'设置成功');
+    loadCreds();
+  }catch(e){ toast('error','Preview设置失败',e.message); }
+}
+
+async function testCred(filename){
+  toast('info','测试中','正在测试凭证...');
+  try{
+    var d=await apiJSON('POST','/panel/credentials/test/'+encodeURIComponent(filename));
+    if(d.success) toast('success','测试通过',d.message||'模型: '+(d.model_version||'未知'));
+    else toast('error','测试失败',d.message||'未知错误');
+  }catch(e){ toast('error','测试失败',e.message); }
+}
+
+function downloadCred(filename){
+  var a=document.createElement('a');
+  a.href='/panel/credentials/'+encodeURIComponent(filename)+'/download?token='+encodeURIComponent(token);
+  a.setAttribute('download',filename);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function downloadAll(){
+  var a=document.createElement('a');
+  a.href='/panel/credentials/download-all?token='+encodeURIComponent(token);
+  a.setAttribute('download','credentials.zip');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+async function refreshAllEmails(){
+  toast('info','刷新中','正在刷新所有邮箱...');
+  try{
+    var d=await apiJSON('POST','/panel/credentials/refresh-all-emails');
+    toast('success','刷新完成',d.message||('成功 '+d.success_count+' 个'));
+    loadCreds();
+  }catch(e){ toast('error','刷新失败',e.message); }
+}
+
+async function deduplicateEmails(){
+  var ok=await confirm2('邮箱去重','将删除重复邮箱的凭证（每个邮箱保留第一个），确认执行吗？');
+  if(!ok) return;
+  try{
+    var d=await apiJSON('POST','/panel/credentials/deduplicate-by-email');
+    toast('success','去重完成',d.message||('删除 '+d.deleted_count+' 个'));
+    loadCreds();
+  }catch(e){ toast('error','去重失败',e.message); }
+}
+</script><script>
+// ============================================================
+// OAUTH TAB
+// ============================================================
+async function oauthStart(){
+  var pid=document.getElementById('oauthProjectId').value.trim();
+  var mode=document.getElementById('oauthMode').value;
+  oauthModeVal=mode;
+  try{
+    var body={mode:'geminicli'};
+    if(pid) body.project_id=pid;
+    var d=await apiJSON('POST','/panel/auth/start',body);
+    oauthState=d.state||d.oauth_state||null;
+    document.getElementById('oauthAuthUrl').textContent=d.auth_url||d.url||'';
+    showOauthStep(2);
+    if(mode==='auto'){
+      document.getElementById('autoPollInfo').style.display='block';
+      startOauthPoll();
+    } else {
+      document.getElementById('autoPollInfo').style.display='none';
+    }
+  }catch(e){ toast('error','获取授权链接失败',e.message); }
+}
+
+function openAuthUrl(){
+  var url=document.getElementById('oauthAuthUrl').textContent;
+  if(url) window.open(url,'_blank');
+}
+
+function startOauthPoll(){
+  oauthPollSec=0;
+  if(oauthPollTimer) clearInterval(oauthPollTimer);
+  oauthPollTimer=setInterval(async function(){
+    oauthPollSec++;
+    document.getElementById('pollCounter').textContent=oauthPollSec;
+    if(!oauthState) return;
+    try{
+      var d=await apiJSON('GET','/panel/auth/status/'+encodeURIComponent(oauthState));
+      if(d.found&&(d.completed||d.has_code)){
+        stopOauthPoll();
+        oauthGoStep3();
+        toast('success','授权完成','已检测到授权回调，请点击获取凭证');
+      }
+    }catch(e){}
+  },1000);
+}
+
+function stopOauthPoll(){
+  if(oauthPollTimer){ clearInterval(oauthPollTimer); oauthPollTimer=null; }
+}
+
+function oauthGoStep3(){
+  stopOauthPoll();
+  showOauthStep(3);
+  var mode=oauthModeVal;
+  document.getElementById('step3Auto').style.display=mode==='auto'?'block':'none';
+  document.getElementById('step3ManualCode').style.display=mode==='manual-code'?'block':'none';
+  document.getElementById('step3ManualUrl').style.display=mode==='manual-url'?'block':'none';
+  document.getElementById('oauthProjectId2').value=document.getElementById('oauthProjectId').value;
+}
+
+async function oauthGetCredential(){
+  var mode=oauthModeVal;
+  var pid=(document.getElementById('oauthProjectId2').value||document.getElementById('oauthProjectId').value).trim();
+  var body={mode:'geminicli'};
+  if(oauthState) body.state=oauthState;
+  if(pid) body.project_id=pid;
+  var endpoint='/panel/auth/callback';
+  if(mode==='manual-code'){
+    var code=document.getElementById('oauthCode').value.trim();
+    if(!code){ toast('warning','提示','请输入授权码'); return; }
+    body.code=code; endpoint='/panel/auth/exchange';
+  } else if(mode==='manual-url'){
+    var cburl=document.getElementById('oauthCallbackUrl').value.trim();
+    if(!cburl){ toast('warning','提示','请输入回调URL'); return; }
+    body.callback_url=cburl; endpoint='/panel/auth/callback';
+  } else {
+    var manualCode=document.getElementById('oauthCodeAuto').value.trim();
+    if(manualCode){ body.code=manualCode; endpoint='/panel/auth/exchange'; }
+    else endpoint='/panel/auth/callback';
+  }
+  try{
+    var d=await apiJSON('POST',endpoint,body);
+    showOauthStep(4);
+    if(d.requires_project_selection&&d.available_projects&&d.available_projects.length){
+      document.getElementById('oauthCredInfo').innerHTML='<div class="alert alert-warning">&#9888; 检测到多个项目，请选择后继续</div>';
+      document.getElementById('oauthProjectSelect').style.display='block';
+      document.getElementById('projectList').innerHTML=d.available_projects.map(function(p,i){
+        var pid=typeof p==='string'?p:(p.id||p.projectId||JSON.stringify(p));
+        var pname=typeof p==='string'?p:(p.name||p.id||p.projectId||pid);
+        return '<label class="project-item"><input type="radio" name="proj" value="'+escHtml(pid)+'" '+(i==0?'checked':'')+'> '+escHtml(pname)+'</label>';
+      }).join('');
+    } else {
+      document.getElementById('oauthProjectSelect').style.display='none';
+      var fp=d.file_path||d.filename||'已保存';
+      var cred=d.credentials||{};
+      document.getElementById('oauthCredInfo').innerHTML=
+        '<div class="info-row"><span class="info-label">保存路径</span><span class="info-value">'+escHtml(fp)+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Client ID</span><span class="info-value">'+escHtml(cred.client_id||'-')+'</span></div>';
+      toast('success','凭证获取成功','已保存至 '+fp);
+    }
+  }catch(e){ toast('error','获取凭证失败',e.message); }
+}
+
+async function selectProject(){
+  var sel=document.querySelector('input[name=proj]:checked');
+  if(!sel){ toast('warning','提示','请选择一个项目'); return; }
+  var pid=sel.value;
+  var body={mode:'geminicli',project_id:pid};
+  if(oauthState) body.state=oauthState;
+  try{
+    var d=await apiJSON('POST','/panel/auth/callback',body);
+    document.getElementById('oauthProjectSelect').style.display='none';
+    var fp=d.file_path||d.filename||'已保存';
+    document.getElementById('oauthCredInfo').innerHTML=
+      '<div class="alert alert-success">&#127881; 项目已选择，凭证已保存</div>'
+      +'<div class="info-row"><span class="info-label">保存路径</span><span class="info-value">'+escHtml(fp)+'</span></div>';
+    toast('success','完成','凭证已保存至 '+fp);
+  }catch(e){ toast('error','失败',e.message); }
+}
+
+function showOauthStep(n){
+  for(var i=1;i<=4;i++){
+    var panel=document.getElementById('oauthStep'+i);
+    if(panel) panel.style.display=(i==n?'block':'none');
+    var circle=document.getElementById('sc'+i);
+    var label=document.getElementById('sl'+i);
+    var line=document.getElementById('sline'+i);
+    if(circle){
+      circle.className='step-circle'+(i<n?' done':i==n?' active':'');
+      circle.textContent=i<n?'✓':String(i);
+    }
+    if(label) label.className='step-label'+(i==n?' active':'');
+    if(line) line.className='step-line'+(i<n?' done':'');
   }
 }
 
-function renderCredentials(list) {
-  const tbody = document.getElementById('cred-tbody');
-  tbody.innerHTML = '';
-  document.getElementById('select-all').checked = false;
-  list.forEach(cred => {
-    const st = cred.status || {};
-    const disabled = st.disabled || false;
-    const errCount = st.error_count || 0;
-    const email = st.user_email || cred.status?.user_email || '';
-    const projectId = cred.project_id || st.project_id || '';
-    const tr = document.createElement('tr');
-    tr.dataset.filename = cred.filename;
-    tr.innerHTML = `
-      <td><input type="checkbox" class="row-check" value="${esc(cred.filename)}"></td>
-      <td title="${esc(cred.filename)}" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cred.filename)}</td>
-      <td style="color:var(--text-dim)">${esc(email) || '<em style="opacity:.4">未获取</em>'}</td>
-      <td style="font-family:monospace;font-size:12px">${esc(projectId)}</td>
-      <td>${disabled ? '<span class="badge badge-red">禁用</span>' : '<span class="badge badge-green">启用</span>'}</td>
-      <td style="text-align:center">${errCount > 0 ? `<span class="badge badge-yellow">${errCount}</span>` : '0'}</td>
-      <td>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${disabled
-            ? `<button class="btn-secondary btn-sm" onclick="credAction('${esc(cred.filename)}','enable')">启用</button>`
-            : `<button class="btn-secondary btn-sm" onclick="credAction('${esc(cred.filename)}','disable')">禁用</button>`}
-          <button class="btn-secondary btn-sm" onclick="getEmail('${esc(cred.filename)}',this)">📧</button>
-          <button class="btn-secondary btn-sm" onclick="downloadCred('${esc(cred.filename)}')">⬇</button>
-          <button class="btn-danger btn-sm" onclick="deleteCredPrompt('${esc(cred.filename)}')">删除</button>
-        </div>
-      </td>`;
-    tbody.appendChild(tr);
+function oauthReset(){
+  stopOauthPoll();
+  oauthState=null;
+  ['oauthProjectId','oauthProjectId2','oauthCode','oauthCallbackUrl','oauthCodeAuto'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('oauthAuthUrl').textContent='';
+  showOauthStep(1);
+}
+
+// ============================================================
+// UPLOAD TAB
+// ============================================================
+function onDragOver(e){ e.preventDefault(); document.getElementById('uploadZone').classList.add('drag-over'); }
+function onDragLeave(){ document.getElementById('uploadZone').classList.remove('drag-over'); }
+function onDrop(e){
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  var files=Array.from(e.dataTransfer.files).filter(function(f){return f.name.endsWith('.json');});
+  addUploadFiles(files);
+}
+function onFileSelect(e){ addUploadFiles(Array.from(e.target.files)); e.target.value=''; }
+
+function addUploadFiles(files){
+  files.forEach(function(f){
+    if(!selectedFilesUpload.find(function(x){return x.name===f.name;})) selectedFilesUpload.push(f);
+  });
+  renderFileList();
+}
+
+function renderFileList(){
+  var el=document.getElementById('fileList');
+  document.getElementById('uploadBtn').disabled=selectedFilesUpload.length===0;
+  el.innerHTML=selectedFilesUpload.map(function(f,i){
+    return '<div class="file-item">'
+      +'<span>&#128196; '+escHtml(f.name)+'</span>'
+      +'<span class="file-size">'+formatSize(f.size)+'</span>'
+      +'<button class="btn btn-xs btn-danger" onclick="removeFile('+i+')">&#x2715;</button>'
+      +'</div>';
+  }).join('');
+}
+
+function removeFile(i){ selectedFilesUpload.splice(i,1); renderFileList(); }
+function clearFiles(){
+  selectedFilesUpload=[];
+  renderFileList();
+  document.getElementById('uploadResults').innerHTML='';
+}
+
+async function doUpload(){
+  if(!selectedFilesUpload.length) return;
+  document.getElementById('uploadProgress').style.display='block';
+  document.getElementById('uploadResults').innerHTML='';
+  var fd=new FormData();
+  selectedFilesUpload.forEach(function(f){fd.append('files',f);});
+  try{
+    var r=await api('POST','/panel/credentials/upload',fd,true);
+    var d=await r.json();
+    document.getElementById('uploadProgress').style.display='none';
+    var results=d.results||[];
+    var successCount=results.filter(function(r){return r.success;}).length;
+    toast(successCount>0?'success':'warning','上传完成','成功 '+successCount+'/'+results.length);
+    document.getElementById('uploadResults').innerHTML=results.map(function(r){
+      var cls=r.success?'success':(r.status==='skip'?'skip':'error');
+      var icon=r.success?'&#9989;':(r.status==='skip'?'&#9888;':'&#10060;');
+      return '<div class="upload-result-item '+cls+'">'+icon+' '+escHtml(r.filename)+' — '+escHtml(r.message||r.status||'')+'</div>';
+    }).join('');
+    if(successCount>0){ selectedFilesUpload=[]; renderFileList(); }
+  }catch(e){
+    document.getElementById('uploadProgress').style.display='none';
+    toast('error','上传失败',e.message);
+  }
+}
+
+// ============================================================
+// CONFIG TAB
+// ============================================================
+var CONFIG_META = {
+  API_PASSWORD:{label:'API 密码',type:'password',env:'API_PASSWORD'},
+  PANEL_PASSWORD:{label:'控制面板密码',type:'password',env:'PANEL_PASSWORD'},
+  PORT:{label:'监听端口',type:'number',env:'PORT'},
+  HOST:{label:'监听地址',type:'text',env:'HOST'},
+  CREDENTIALS_DIR:{label:'凭证目录',type:'text',env:'CREDENTIALS_DIR'},
+  CODE_ASSIST_ENDPOINT:{label:'GeminiCLI 端点',type:'text',env:'CODE_ASSIST_ENDPOINT'},
+  VERTEX_AI_LOCATION:{label:'Vertex AI 区域',type:'text',env:'VERTEX_AI_LOCATION'},
+  PROXY:{label:'HTTP 代理',type:'text',env:'PROXY'},
+  AUTO_BAN:{label:'自动封禁',type:'bool',env:'AUTO_BAN'},
+  RETURN_THOUGHTS_TO_FRONTEND:{label:'返回思维链',type:'bool',env:'RETURN_THOUGHTS_TO_FRONTEND'},
+  LOG_LEVEL:{label:'日志级别',type:'select',options:['debug','info','warning','error'],env:'LOG_LEVEL'},
+  ENABLE_LOG:{label:'启用日志',type:'bool',env:'ENABLE_LOG'},
+};
+
+async function loadConfig(){
+  try{
+    var d=await apiJSON('GET','/panel/config');
+    configData=d.config||d||{};
+    envLocked=d.env_locked||[];
+    renderConfigTable();
+  }catch(e){ toast('error','加载配置失败',e.message); }
+}
+
+function renderConfigTable(){
+  var tbody=document.getElementById('configBody');
+  var allKeys=new Set(Object.keys(CONFIG_META).concat(Object.keys(configData)));
+  var html='';
+  allKeys.forEach(function(key){
+    var meta=CONFIG_META[key]||{label:key,type:'text',env:key};
+    var val=configData[key]!==undefined?configData[key]:'';
+    var locked=envLocked.indexOf(key)>=0;
+    var type=meta.type||'text';
+    var inputHtml='';
+    if(locked){
+      inputHtml='<input type="text" value="'+escHtml(String(val))+'" disabled>';
+    } else if(type==='bool'){
+      var bval=(val===true||val==='true'||val==='1'||val===1)?'true':'false';
+      inputHtml='<select name="'+escHtml(key)+'">'
+        +'<option value="true"'+(bval==='true'?' selected':'')+'>true</option>'
+        +'<option value="false"'+(bval==='false'?' selected':'')+'>false</option>'
+        +'</select>';
+    } else if(type==='select'){
+      var opts=(meta.options||[]).map(function(o){
+        return '<option value="'+escHtml(o)+'"'+(String(val)===o?' selected':'')+'>'+escHtml(o)+'</option>';
+      }).join('');
+      inputHtml='<select name="'+escHtml(key)+'">'+opts+'</select>';
+    } else if(type==='number'){
+      inputHtml='<input type="number" name="'+escHtml(key)+'" value="'+escHtml(String(val))+'">';
+    } else if(type==='password'){
+      inputHtml='<input type="password" name="'+escHtml(key)+'" value="'+escHtml(String(val))+'" placeholder="(不修改请留空)">';
+    } else {
+      inputHtml='<input type="text" name="'+escHtml(key)+'" value="'+escHtml(String(val))+'">';
+    }
+    html+='<tr>'
+      +'<td><span class="config-key">'+escHtml(meta.label||key)+'</span></td>'
+      +'<td>'+(locked?'<span style="color:var(--yellow)" title="环境变量锁定">&#128274;</span>':'<span style="color:var(--text-muted)">-</span>')+'</td>'
+      +'<td>'+inputHtml+'</td>'
+      +'<td><span style="font-family:monospace;font-size:11px;color:var(--text-muted)">'+escHtml(meta.env||key)+'</span></td>'
+      +'</tr>';
+  });
+  tbody.innerHTML=html||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">无配置项</td></tr>';
+}
+
+async function saveConfig(){
+  var tbody=document.getElementById('configBody');
+  var cfg={};
+  tbody.querySelectorAll('input[name]:not([disabled]),select[name]').forEach(function(el){
+    var k=el.name, v=el.value;
+    if(el.type==='password'&&v==='') return;
+    cfg[k]=v;
+  });
+  try{
+    var d=await apiJSON('POST','/panel/config/save',{config:cfg});
+    toast('success','保存成功',d.message||'配置已保存');
+    loadConfig();
+  }catch(e){ toast('error','保存失败',e.message); }
+}
+</script><script>
+// ============================================================
+// LOGS TAB
+// ============================================================
+async function loadLogHistory(){
+  try{
+    var d=await apiJSON('GET','/panel/logs?lines=500');
+    allLogLines=d.logs||[];
+    filterLogs();
+    toast('success','加载完成','共 '+allLogLines.length+' 行');
+  }catch(e){ toast('error','加载日志失败',e.message); }
+}
+
+function appendLog(lines){
+  allLogLines=allLogLines.concat(lines);
+  if(allLogLines.length>5000) allLogLines=allLogLines.slice(-5000);
+  filterLogs();
+}
+
+function filterLogs(){
+  var level=document.getElementById('logLevelFilter').value;
+  var out=document.getElementById('logOutput');
+  var LEVELS=['DEBUG','INFO','WARNING','ERROR','CRITICAL'];
+  var minIdx=level==='all'?-1:LEVELS.indexOf(level);
+  var filtered=allLogLines.filter(function(l){
+    if(minIdx<0) return true;
+    var m=l.match(/\b(DEBUG|INFO|WARNING|ERROR|CRITICAL)\b/);
+    if(!m) return true;
+    return LEVELS.indexOf(m[1])>=minIdx;
+  });
+  out.innerHTML=filtered.map(function(l){
+    var m=l.match(/\b(DEBUG|INFO|WARNING|ERROR|CRITICAL)\b/);
+    var cls=m?m[1]:'INFO';
+    return '<div class="log-line '+cls+'">'+escHtml(l)+'</div>';
+  }).join('');
+  if(document.getElementById('autoScroll').checked) out.scrollTop=out.scrollHeight;
+}
+
+function wsConnect(){
+  if(ws&&ws.readyState===WebSocket.OPEN){ toast('info','已连接','WebSocket 连接正在运行'); return; }
+  var proto=location.protocol==='https:'?'wss:':'ws:';
+  var url=proto+'//'+location.host+'/panel/ws/logs?token='+encodeURIComponent(token);
+  try{
+    ws=new WebSocket(url);
+    ws.onopen=function(){ setWsStatus(true); toast('success','WebSocket 已连接','开始接收实时日志'); };
+    ws.onmessage=function(e){
+      try{
+        var d=JSON.parse(e.data);
+        if(d.logs) appendLog(d.logs);
+        else if(Array.isArray(d)) appendLog(d);
+      }catch(err){ appendLog([e.data]); }
+    };
+    ws.onclose=function(){ setWsStatus(false); ws=null; };
+    ws.onerror=function(){ setWsStatus(false); toast('error','WebSocket 错误','连接失败'); };
+  }catch(e){ toast('error','连接失败',e.message); }
+}
+
+function wsDisconnect(){
+  if(ws){ ws.close(); ws=null; }
+  setWsStatus(false);
+}
+
+function setWsStatus(connected){
+  document.getElementById('wsDot').className='ws-dot'+(connected?' connected':'');
+  document.getElementById('wsStatus').textContent=connected?'已连接':'未连接';
+}
+
+function downloadLogs(){
+  var a=document.createElement('a');
+  a.href='/panel/logs/download?token='+encodeURIComponent(token);
+  a.setAttribute('download','gcli2api.log');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+async function clearLogs(){
+  var ok=await confirm2('清空日志','确定要清空所有日志吗？');
+  if(!ok) return;
+  try{
+    await apiJSON('DELETE','/panel/logs');
+    allLogLines=[];
+    document.getElementById('logOutput').innerHTML='';
+    toast('success','已清空','日志已清空');
+  }catch(e){ toast('error','清空失败',e.message); }
+}
+
+// ============================================================
+// VERSION / INFO TAB
+// ============================================================
+async function loadVersion(){
+  try{
+    var d=await apiJSON('GET','/panel/version');
+    document.getElementById('versionNum').textContent=d.version||'-';
+    document.getElementById('versionMsg').textContent=d.message||'-';
+    document.getElementById('versionDate').textContent=d.date?'发布日期: '+d.date:'';
+  }catch(e){}
+}
+
+async function checkUpdate(){
+  toast('info','检查中','正在检查更新...');
+  try{
+    var d=await apiJSON('GET','/panel/version?check_update=true');
+    document.getElementById('versionNum').textContent=d.version||'-';
+    document.getElementById('versionMsg').textContent=d.message||'-';
+    document.getElementById('versionDate').textContent=d.date?'发布日期: '+d.date:'';
+    var el=document.getElementById('updateInfo');
+    if(d.has_update){
+      el.innerHTML='<div class="alert alert-warning">&#128226; 发现新版本 <strong>'+escHtml(d.latest_version)+'</strong>，当前版本 '+escHtml(d.version||'')+'</div>';
+    } else {
+      el.innerHTML='<div class="alert alert-success">&#9989; 当前已是最新版本 '+escHtml(d.version||'')+'</div>';
+    }
+  }catch(e){ toast('error','检查失败',e.message); }
+}
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+function toast(type, title, msg, duration){
+  duration=duration||4000;
+  var icons={success:'&#9989;',error:'&#10060;',info:'&#8505;&#65039;',warning:'&#9888;&#65039;'};
+  var el=document.createElement('div');
+  el.className='toast '+type;
+  el.innerHTML='<span class="toast-icon">'+(icons[type]||'&#8505;&#65039;')+'</span>'
+    +'<div class="toast-body">'
+    +'<div class="toast-title">'+escHtml(String(title))+'</div>'
+    +(msg?'<div class="toast-msg">'+escHtml(String(msg))+'</div>':'')
+    +'</div>'
+    +'<button class="toast-close" onclick="this.closest(\'.toast\').remove()">&#215;</button>';
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(function(){
+    el.style.animation='slideOut .3s ease forwards';
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},300);
+  },duration);
+}
+
+// ============================================================
+// CONFIRM MODAL
+// ============================================================
+function confirm2(title, body){
+  return new Promise(function(resolve){
+    confirmResolve=resolve;
+    document.getElementById('confirmTitle').textContent=title;
+    document.getElementById('confirmBody').textContent=body;
+    document.getElementById('confirmModal').style.display='flex';
   });
 }
 
-function filterCredentials(q) {
-  const filtered = credentialsData.filter(c =>
-    c.filename.toLowerCase().includes(q.toLowerCase()) ||
-    (c.project_id || '').toLowerCase().includes(q.toLowerCase()) ||
-    (c.status?.user_email || '').toLowerCase().includes(q.toLowerCase())
-  );
-  renderCredentials(filtered);
+function closeConfirm(result){
+  document.getElementById('confirmModal').style.display='none';
+  if(confirmResolve){ confirmResolve(result); confirmResolve=null; }
 }
 
-function toggleSelectAll(checked) {
-  document.querySelectorAll('.row-check').forEach(cb => cb.checked = checked);
-}
-
-function getSelectedFilenames() {
-  return [...document.querySelectorAll('.row-check:checked')].map(cb => cb.value);
-}
-
-async function credAction(filename, action) {
-  try {
-    const r = await api('POST', '/panel/credentials/action', {filename, action});
-    notify('success', r.message || `操作成功`);
-    loadCredentials();
-  } catch(e) { notify('error', '操作失败: ' + e.message); }
-}
-
-function deleteCredPrompt(filename) {
-  document.getElementById('delete-msg').textContent = `确定要删除凭证 "${filename}" 吗？此操作不可撤销。`;
-  pendingDeleteFn = async () => {
-    await credAction(filename, 'delete');
-  };
-  openModal('delete-modal');
-}
-
-async function batchDelete() {
-  const names = getSelectedFilenames();
-  if (!names.length) { notify('info', '请先选择要删除的凭证'); return; }
-  document.getElementById('delete-msg').textContent = `确定要删除选中的 ${names.length} 个凭证吗？此操作不可撤销。`;
-  pendingDeleteFn = async () => {
-    await api('POST', '/panel/credentials/batch', {action:'delete', filenames: names});
-    notify('success', `已删除 ${names.length} 个凭证`);
-    loadCredentials();
-  };
-  openModal('delete-modal');
-}
-
-async function confirmDelete() {
-  closeModal('delete-modal');
-  if (pendingDeleteFn) { await pendingDeleteFn(); pendingDeleteFn = null; }
-}
-
-async function getEmail(filename, btn) {
-  btn.disabled = true;
-  btn.textContent = '...';
-  try {
-    const r = await api('POST', '/panel/credentials/email', {filename});
-    notify('success', `邮箱: ${r.email || '(未能获取)'}`);
-    loadCredentials();
-  } catch(e) { notify('error', '获取邮箱失败: ' + e.message); }
-  finally { btn.disabled = false; btn.textContent = '📧'; }
-}
-
-async function batchGetEmails() {
-  const names = getSelectedFilenames();
-  const targets = names.length ? names : credentialsData.map(c => c.filename);
-  if (!targets.length) { notify('info', '暂无凭证'); return; }
-  notify('info', `正在获取 ${targets.length} 个凭证的邮箱...`);
-  try {
-    const r = await api('POST', '/panel/credentials/email/batch', {filenames: targets});
-    const ok = (r.results || []).filter(x => x.success).length;
-    notify('success', `批量获取完成：${ok}/${targets.length} 成功`);
-    loadCredentials();
-  } catch(e) { notify('error', '批量获取邮箱失败: ' + e.message); }
-}
-
-async function downloadCred(filename) {
-  const a = document.createElement('a');
-  a.href = `/panel/credentials/${encodeURIComponent(filename)}/download`;
-  a.download = filename;
-  // Add token as query fallback not needed since it uses Authorization header — use fetch instead
-  try {
-    const r = await fetch(a.href, {headers: {'Authorization': 'Bearer ' + token}});
-    if (!r.ok) throw new Error('下载失败');
-    const blob = await r.blob();
-    const url = URL.createObjectURL(blob);
-    a.href = url; a.click(); URL.revokeObjectURL(url);
-  } catch(e) { notify('error', '下载失败: ' + e.message); }
-}
-
-// ===========================
-// UPLOAD
-// ===========================
-function openUploadModal() {
-  selectedFiles = [];
-  document.getElementById('upload-file-list').textContent = '';
-  document.getElementById('file-input').value = '';
-  openModal('upload-modal');
-}
-
-function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
-function onDragLeave(e) { e.currentTarget.classList.remove('dragover'); }
-function onDrop(e) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('dragover');
-  selectedFiles = [...e.dataTransfer.files];
-  showFileList();
-}
-function onFileSelected(input) {
-  selectedFiles = [...input.files];
-  showFileList();
-}
-function showFileList() {
-  const el = document.getElementById('upload-file-list');
-  el.innerHTML = selectedFiles.map(f => `<div>📄 ${esc(f.name)} (${formatBytes(f.size)})</div>`).join('');
-}
-
-async function doUpload() {
-  if (!selectedFiles.length) { notify('info', '请先选择文件'); return; }
-  const fd = new FormData();
-  selectedFiles.forEach(f => fd.append('files', f));
-  closeModal('upload-modal');
-  notify('info', '上传中...');
-  try {
-    const r = await api('POST', '/panel/credentials/upload', fd, true);
-    const ok = (r.results || []).filter(x => x.success).length;
-    const fail = (r.results || []).filter(x => !x.success);
-    notify('success', `上传完成：${ok} 成功${fail.length ? `，${fail.length} 失败` : ''}`);
-    if (fail.length) fail.forEach(f => notify('error', `${f.filename}: ${f.error}`));
-    loadCredentials();
-  } catch(e) { notify('error', '上传失败: ' + e.message); }
-}
-
-// ===========================
-// OAUTH
-// ===========================
-async function startAuth() {
-  authMode = document.getElementById('auth-mode').value;
-  const projectId = document.getElementById('auth-project-id').value;
-  try {
-    const r = await api('POST', '/panel/auth/start', {mode: authMode, project_id: projectId});
-    authUrl = r.auth_url;
-    document.getElementById('auth-url-display').textContent = authUrl;
-    authStep(2);
-  } catch(e) { notify('error', '获取授权链接失败: ' + e.message); }
-}
-
-function openAuthUrl() { window.open(authUrl, '_blank'); }
-function copyAuthUrl() {
-  navigator.clipboard.writeText(authUrl).then(() => notify('success', '已复制到剪贴板'));
-}
-
-async function exchangeCode() {
-  const code = document.getElementById('auth-code').value.trim();
-  const projectId = document.getElementById('auth-code-project').value.trim()
-    || document.getElementById('auth-project-id').value.trim();
-  if (!code) { notify('error', '请输入授权码'); return; }
-  try {
-    const r = await api('POST', '/panel/auth/exchange', {code, mode: authMode, project_id: projectId});
-    if (r.success) {
-      document.getElementById('auth-result-info').textContent =
-        `凭证已保存: ${r.filename}` + (r.email ? ` (${r.email})` : '');
-      authStep(4);
-      notify('success', '授权成功！');
-    } else {
-      notify('error', r.detail || '授权失败');
-    }
-  } catch(e) { notify('error', '授权失败: ' + e.message); }
-}
-
-function authStep(n) {
-  for (let i = 1; i <= 4; i++) {
-    const el = document.getElementById('auth-step' + i);
-    const stel = document.getElementById('step' + i);
-    if (el) el.style.display = i === n ? '' : 'none';
-    if (stel) stel.classList.toggle('active', i === n);
-  }
-}
-
-function authReset() {
-  document.getElementById('auth-code').value = '';
-  document.getElementById('auth-code-project').value = '';
-  authStep(1);
-}
-
-// ===========================
-// CONFIG
-// ===========================
-async function loadConfig() {
-  try {
-    const data = await api('GET', '/panel/config');
-    const tbody = document.getElementById('config-tbody');
-    tbody.innerHTML = '';
-    const labelMap = {
-      code_assist_endpoint: 'GeminiCLI 端点',
-      credentials_dir: '凭证目录',
-      proxy: 'HTTP代理',
-      oauth_proxy_url: 'OAuth代理URL',
-      googleapis_proxy_url: 'Google APIs代理',
-      resource_manager_api_url: 'Resource Manager URL',
-      service_usage_api_url: 'Service Usage URL',
-      auto_ban_enabled: '自动封禁',
-      auto_ban_error_codes: '自动封禁错误码',
-      retry_429_max_retries: '429最大重试次数',
-      retry_429_enabled: '429重试启用',
-      retry_429_interval: '429重试间隔(秒)',
-      anti_truncation_max_attempts: '抗截断最大重试次数',
-      compatibility_mode_enabled: '兼容模式',
-      return_thoughts_to_frontend: '返回思维链到前端',
-      vertex_ai_location: 'Vertex AI区域',
-      vertex_ai_project_id: 'Vertex AI项目ID',
-      host: '服务监听地址',
-      port: '服务端口',
-      api_password: 'API密码',
-      panel_password: '控制面板密码',
-      password: '通用密码(兼容)',
-      keepalive_url: '保活URL',
-      keepalive_interval: '保活间隔(秒)',
-    };
-    (data.config || []).forEach(item => {
-      const tr = document.createElement('tr');
-      tr.className = 'config-row';
-      tr.innerHTML = `
-        <td>${labelMap[item.key] || item.key}</td>
-        <td style="text-align:center">${item.env_locked ? '<span class="badge badge-blue">锁定</span>' : ''}</td>
-        <td>${item.env_locked
-          ? `<input type="text" value="${esc(String(item.value))}" disabled style="opacity:.5">`
-          : `<input type="text" data-key="${esc(item.key)}" value="${esc(String(item.value ?? ''))}">`}
-        </td>
-        <td class="config-env">${item.env_var || ''}</td>`;
-      tbody.appendChild(tr);
-    });
-  } catch(e) { notify('error', '加载配置失败: ' + e.message); }
-}
-
-async function saveConfig() {
-  const inputs = document.querySelectorAll('#config-tbody input[data-key]:not([disabled])');
-  const config = {};
-  inputs.forEach(inp => { config[inp.dataset.key] = inp.value; });
-  try {
-    await api('POST', '/panel/config/save', {config});
-    notify('success', '配置已保存');
-  } catch(e) { notify('error', '保存配置失败: ' + e.message); }
-}
-
-// ===========================
-// LOGS
-// ===========================
-async function loadLogs() {
-  try {
-    const data = await api('GET', '/panel/logs?lines=500');
-    const out = document.getElementById('log-output');
-    out.innerHTML = '';
-    (data.logs || []).forEach(l => appendLogLine(l));
-    scrollLogsBottom();
-  } catch(e) { notify('error', '加载日志失败: ' + e.message); }
-}
-
-function appendLogLine(line) {
-  const out = document.getElementById('log-output');
-  const span = document.createElement('div');
-  const ll = line.toLowerCase();
-  if (ll.includes('[error]') || ll.includes('[critical]')) span.className = 'log-error';
-  else if (ll.includes('[warning]')) span.className = 'log-warning';
-  else if (ll.includes('[debug]')) span.className = 'log-debug';
-  else span.className = 'log-info';
-  span.textContent = line;
-  out.appendChild(span);
-  // Keep last 2000 lines
-  while (out.children.length > 2000) out.removeChild(out.firstChild);
-}
-
-function scrollLogsBottom() {
-  if (document.getElementById('log-autoscroll').checked) {
-    const out = document.getElementById('log-output');
-    out.scrollTop = out.scrollHeight;
-  }
-}
-
-function toggleWsLogs() {
-  if (wsConn) stopWsLogs();
-  else startWsLogs();
-}
-
-function startWsLogs() {
-  const btn = document.getElementById('ws-btn');
-  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const url = `${proto}//${location.host}/panel/ws/logs?token=${encodeURIComponent(token)}`;
-  wsConn = new WebSocket(url);
-  wsConn.onopen = () => {
-    btn.textContent = '⏹ 停止实时日志';
-    btn.style.color = 'var(--green)';
-  };
-  wsConn.onmessage = e => {
-    try {
-      const msg = JSON.parse(e.data);
-      if (msg.logs) msg.logs.forEach(l => appendLogLine(l));
-      scrollLogsBottom();
-    } catch {}
-  };
-  wsConn.onclose = () => {
-    btn.textContent = '▶ 启动实时日志';
-    btn.style.color = '';
-    wsConn = null;
-  };
-  wsConn.onerror = () => {
-    notify('error', 'WebSocket 连接失败');
-    stopWsLogs();
-  };
-}
-
-function stopWsLogs() {
-  if (wsConn) { wsConn.close(); wsConn = null; }
-  const btn = document.getElementById('ws-btn');
-  btn.textContent = '▶ 启动实时日志';
-  btn.style.color = '';
-}
-
-async function downloadLogs() {
-  const r = await fetch('/panel/logs/download', {headers: {'Authorization': 'Bearer ' + token}});
-  if (!r.ok) { notify('error', '下载失败'); return; }
-  const blob = await r.blob();
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'gcli2api.log'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-async function clearLogs() {
-  try {
-    await api('DELETE', '/panel/logs');
-    document.getElementById('log-output').innerHTML = '';
-    notify('success', '日志已清空');
-  } catch(e) { notify('error', '清空失败: ' + e.message); }
-}
-
-// ===========================
-// MODAL
-// ===========================
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// Close modal on overlay click
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('modal-overlay')) {
-    e.target.classList.remove('open');
-  }
+document.getElementById('confirmModal').addEventListener('click',function(e){
+  if(e.target===this) closeConfirm(false);
 });
 
-// ===========================
-// NOTIFICATIONS
-// ===========================
-function notify(type, msg, ms=4000) {
-  const container = document.getElementById('notification');
-  const el = document.createElement('div');
-  el.className = `notif ${type}`;
-  el.textContent = msg;
-  container.appendChild(el);
-  setTimeout(() => { el.style.opacity='0'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, ms);
+// ============================================================
+// UTILITIES
+// ============================================================
+function escHtml(s){
+  if(s==null) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
 }
 
-// ===========================
-// UTILS
-// ===========================
-function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function copyText(text){
+  if(!text){ toast('warning','复制失败','内容为空'); return; }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      toast('success','已复制','内容已复制到剪贴板');
+    }).catch(function(){ fallbackCopy(text); });
+  } else { fallbackCopy(text); }
 }
-function formatBytes(b) {
-  if (b < 1024) return b + ' B';
-  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-  return (b/1048576).toFixed(1) + ' MB';
+
+function fallbackCopy(text){
+  var ta=document.createElement('textarea');
+  ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('success','已复制',''); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+function formatSize(bytes){
+  if(bytes<1024) return bytes+'B';
+  if(bytes<1048576) return (bytes/1024).toFixed(1)+'KB';
+  return (bytes/1048576).toFixed(1)+'MB';
 }
 </script>
 </body>
