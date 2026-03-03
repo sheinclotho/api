@@ -157,7 +157,11 @@ async def get_retry_429_max_retries() -> int:
         except ValueError:
             pass
 
-    return int(await get_config_value("retry_429_max_retries", 5))
+    value = await get_config_value("retry_429_max_retries", 5)
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return 5
 
 
 async def get_retry_429_enabled() -> bool:
@@ -178,7 +182,11 @@ async def get_retry_429_interval() -> float:
         except ValueError:
             pass
 
-    return float(await get_config_value("retry_429_interval", 1))
+    value = await get_config_value("retry_429_interval", 1.0)
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return 1.0
 
 
 async def get_anti_truncation_max_attempts() -> int:
@@ -196,7 +204,11 @@ async def get_anti_truncation_max_attempts() -> int:
         except ValueError:
             pass
 
-    return int(await get_config_value("anti_truncation_max_attempts", 3))
+    value = await get_config_value("anti_truncation_max_attempts", 3)
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return 3
 
 
 # Server Configuration
@@ -226,7 +238,11 @@ async def get_server_port() -> int:
         except ValueError:
             pass
 
-    return int(await get_config_value("port", 7861))
+    value = await get_config_value("port", 7861)
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return 7861
 
 
 async def get_api_password() -> str:
@@ -456,4 +472,8 @@ async def get_keepalive_interval() -> int:
         except ValueError:
             pass
 
-    return int(await get_config_value("keepalive_interval", 60))
+    value = await get_config_value("keepalive_interval", 60)
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return 60
