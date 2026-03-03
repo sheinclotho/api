@@ -37,6 +37,8 @@ ENV_MAPPINGS = {
     "ANTI_TRUNCATION_MAX_ATTEMPTS": "anti_truncation_max_attempts",
     "COMPATIBILITY_MODE": "compatibility_mode_enabled",
     "RETURN_THOUGHTS_TO_FRONTEND": "return_thoughts_to_frontend",
+    "ANTIGRAVITY_API_URL": "antigravity_api_url",
+    "ANTIGRAVITY_STREAM2NOSTREAM": "antigravity_stream2nostream",
     "VERTEX_AI_LOCATION": "vertex_ai_location",
     "VERTEX_AI_PROJECT_ID": "vertex_ai_project_id",
     "HOST": "host",
