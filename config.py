@@ -374,6 +374,20 @@ async def get_vertex_ai_location() -> str:
     return str(await get_config_value("vertex_ai_location", "us-central1", "VERTEX_AI_LOCATION"))
 
 
+async def get_vertex_ai_project_id() -> str:
+    """
+    Get Vertex AI project ID override setting.
+
+    覆盖凭证中的项目 ID，用于指定 Vertex AI 调用所属的 GCP 项目。
+    留空时从凭证数据中自动读取 project_id。
+
+    Environment variable: VERTEX_AI_PROJECT_ID
+    Database config key: vertex_ai_project_id
+    Default: "" (use project_id from credential)
+    """
+    return str(await get_config_value("vertex_ai_project_id", "", "VERTEX_AI_PROJECT_ID"))
+
+
 async def get_oauth_proxy_url() -> str:
     """
     Get OAuth proxy URL setting.

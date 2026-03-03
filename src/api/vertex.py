@@ -8,7 +8,7 @@ import json
 from typing import Any, Dict, Optional
 
 from fastapi import Response
-from config import get_auto_ban_error_codes, get_vertex_ai_location
+from config import get_auto_ban_error_codes, get_vertex_ai_location, get_vertex_ai_project_id
 from log import log
 
 from src.credential_manager import credential_manager
@@ -42,6 +42,57 @@ def _extract_vertex_model_version(resp_json: Any) -> Optional[str]:
     return resp_json.get("modelVersion") or resp_json.get("model") or None
 
 
+async def _ensure_project_id(credential_file: str, credential_data: dict) -> str:
+    """
+    获取有效的 Vertex AI 项目 ID，必要时自动发现并持久化。
+
+    优先级：
+    1. VERTEX_AI_PROJECT_ID 环境变量/配置覆盖
+    2. credential_data 中已有的 project_id
+    3. 通过 loadCodeAssist API 自动发现（写回存储，下次无需再发现）
+    """
+    # 1. 全局配置覆盖
+    project_id_override = await get_vertex_ai_project_id()
+    if project_id_override:
+        return project_id_override
+
+    # 2. 凭证中已有
+    project_id = credential_data.get("project_id", "")
+    if project_id:
+        return project_id
+
+    # 3. 自动发现
+    log.info(f"[VERTEX] 凭证 {credential_file} 缺少 project_id，尝试自动获取...")
+    try:
+        from src.google_oauth_api import fetch_project_id
+        from config import get_code_assist_endpoint
+
+        token = credential_data.get("token") or credential_data.get("access_token", "")
+        if not token:
+            return ""
+
+        api_base_url = await get_code_assist_endpoint()
+        project_id = await fetch_project_id(
+            access_token=token,
+            user_agent=GEMINICLI_USER_AGENT,
+            api_base_url=api_base_url,
+        )
+
+        if project_id:
+            credential_data["project_id"] = project_id
+            await credential_manager._storage_adapter.store_credential(
+                credential_file, credential_data, mode="geminicli"
+            )
+            log.info(f"[VERTEX] 凭证 {credential_file} project_id 已自动获取并保存: {project_id}")
+        else:
+            log.warning(f"[VERTEX] 凭证 {credential_file} 自动获取 project_id 失败")
+
+        return project_id or ""
+    except Exception as e:
+        log.warning(f"[VERTEX] 自动获取 project_id 失败: {e}")
+        return ""
+
+
 # ==================== 请求准备 ====================
 
 async def prepare_vertex_request(payload: dict, credential_data: dict, location: str):
@@ -63,9 +114,12 @@ async def prepare_vertex_request(payload: dict, credential_data: dict, location:
     if not token:
         raise Exception("凭证中没有找到有效的访问令牌（token或access_token字段）")
 
+    # project_id 已由调用方通过 _ensure_project_id 写入 credential_data
     project_id = credential_data.get("project_id", "")
     if not project_id:
-        raise Exception("项目ID不存在于凭证数据中")
+        raise Exception(
+            "项目ID不存在：凭证中无 project_id 且自动获取失败，请检查 loadCodeAssist 权限或设置 VERTEX_AI_PROJECT_ID"
+        )
 
     model_name = payload.get("model", "")
     source_request = payload.get("request", {})
@@ -127,7 +181,10 @@ async def stream_request(
 
     current_file, credential_data = cred_result
 
-    # 2. 构建URL和请求头
+    # 2. 自动确保 project_id（从凭证读取或通过 loadCodeAssist 自动发现并持久化）
+    await _ensure_project_id(current_file, credential_data)
+
+    # 3. 构建URL和请求头
     try:
         location = await get_vertex_ai_location()
         auth_headers, final_payload, stream_url, _ = await prepare_vertex_request(
@@ -146,7 +203,7 @@ async def stream_request(
         )
         return
 
-    # 3. 调用stream_post_async进行请求
+    # 4. 调用stream_post_async进行请求
     retry_config = await get_retry_config()
     max_retries = retry_config["max_retries"]
     retry_interval = retry_config["retry_interval"]
@@ -165,7 +222,7 @@ async def stream_request(
                 return False
             current_file, credential_data = new_cred_result
             token = credential_data.get("token") or credential_data.get("access_token", "")
-            project_id = credential_data.get("project_id", "")
+            project_id = await _ensure_project_id(current_file, credential_data)
             if not token or not project_id:
                 return False
             auth_headers["Authorization"] = f"Bearer {token}"
@@ -202,6 +259,12 @@ async def stream_request(
 
                     if status_code == 429 or status_code == 503 or status_code in DISABLE_ERROR_CODES:
                         log.warning(f"[VERTEX STREAM] 流式请求失败 (status={status_code}), 凭证: {current_file}, 响应: {error_body[:500] if error_body else '无'}")
+
+                        if status_code == 403:
+                            log.warning(
+                                f"[VERTEX STREAM] 403 Forbidden，凭证: {current_file}, 请确认该账号在 GCP 项目中拥有 "
+                                "roles/aiplatform.user 或 roles/aiplatform.admin 角色"
+                            )
 
                         cooldown_until = None
                         if (status_code == 429 or status_code == 503) and error_body:
@@ -290,7 +353,7 @@ async def stream_request(
                         if cred_result:
                             current_file, credential_data = cred_result
                             token = credential_data.get("token") or credential_data.get("access_token", "")
-                            project_id = credential_data.get("project_id", "")
+                            project_id = await _ensure_project_id(current_file, credential_data)
                             if token and project_id:
                                 auth_headers["Authorization"] = f"Bearer {token}"
                                 location = await get_vertex_ai_location()
@@ -367,7 +430,10 @@ async def non_stream_request(
 
     current_file, credential_data = cred_result
 
-    # 2. 构建URL和请求头
+    # 2. 自动确保 project_id（从凭证读取或通过 loadCodeAssist 自动发现并持久化）
+    await _ensure_project_id(current_file, credential_data)
+
+    # 3. 构建URL和请求头
     try:
         location = await get_vertex_ai_location()
         auth_headers, final_payload, _, non_stream_url = await prepare_vertex_request(
@@ -450,6 +516,12 @@ async def non_stream_request(
             if status_code == 429 or status_code == 503 or status_code in DISABLE_ERROR_CODES:
                 log.warning(f"[VERTEX] 非流式请求失败 (status={status_code}), 凭证: {current_file}, 响应: {error_text[:500] if error_text else '无'}")
 
+                if status_code == 403:
+                    log.warning(
+                        f"[VERTEX] 403 Forbidden，凭证: {current_file}, 请确认该账号在 GCP 项目中拥有 "
+                        "roles/aiplatform.user 或 roles/aiplatform.admin 角色"
+                    )
+
                 cooldown_until = None
                 if (status_code == 429 or status_code == 503) and error_text:
                     try:
@@ -487,7 +559,7 @@ async def non_stream_request(
                             if cred_result:
                                 current_file, credential_data = cred_result
                                 token = credential_data.get("token") or credential_data.get("access_token", "")
-                                project_id = credential_data.get("project_id", "")
+                                project_id = await _ensure_project_id(current_file, credential_data)
                                 if token and project_id:
                                     auth_headers["Authorization"] = f"Bearer {token}"
                                     location = await get_vertex_ai_location()
@@ -509,7 +581,7 @@ async def non_stream_request(
                     if new_cred_result:
                         current_file, credential_data = new_cred_result
                         token = credential_data.get("token") or credential_data.get("access_token", "")
-                        project_id = credential_data.get("project_id", "")
+                        project_id = await _ensure_project_id(current_file, credential_data)
                         if token and project_id:
                             auth_headers["Authorization"] = f"Bearer {token}"
                             location = await get_vertex_ai_location()
