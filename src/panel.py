@@ -1023,3 +1023,9 @@ async def ws_logs(websocket: WebSocket, token: str = ""):
 async def panel_index():
     """控制面板首页 - 重定向到前端界面"""
     return RedirectResponse(url="/front/index.html")
+
+
+@router.get("/mobile", response_class=HTMLResponse)
+async def panel_mobile():
+    """移动端控制面板"""
+    return RedirectResponse(url="/front/control_panel_mobile.html")

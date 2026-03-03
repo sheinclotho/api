@@ -2399,7 +2399,7 @@ function connectWebSocket() {
     }
 
     try {
-        const wsPath = window.location.protocol.replace(/^http/, 'ws') + '//' + window.location.host + '/panel/ws/logs';
+        const wsPath = new URL('/panel/ws/logs', window.location.href).href.replace(/^http/, 'ws');
 
         // 添加 token 认证参数
         const wsUrlWithAuth = `${wsPath}?token=${encodeURIComponent(AppState.authToken)}`;
@@ -3036,7 +3036,7 @@ async function fetchAndDisplayVersion() {
 
         const versionText = document.getElementById('versionText');
 
-        if (data.version) {
+        if ("version" in data) {
             // 只显示版本号
             versionText.textContent = `v${data.version}`;
             versionText.title = `版本: ${data.version}` + (data.latest_version ? `\n最新版本: ${data.latest_version}` : '');
@@ -3070,7 +3070,7 @@ async function checkForUpdates() {
         const response = await fetch('/panel/version?check_update=true');
         const data = await response.json();
 
-        if (data.version) {
+        if ("version" in data) {
             if (data.update_available === true) {
                 // 有更新
                 const updateMsg = `发现新版本！\n当前: v${data.version}\n最新: v${data.latest_version || '未知'}`;

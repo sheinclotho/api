@@ -784,7 +784,9 @@ async function loadStatus(){
     document.getElementById('vertexUrl').textContent = base+'/vertex/v1';
     try{
       var cfg = await apiJSON('GET','/panel/config');
-      var pw = (cfg.config||cfg||{}).API_PASSWORD||'';
+      var cfgObj = cfg.config;
+      if(Array.isArray(cfgObj)){ var configDict={}; cfgObj.forEach(function(i){configDict[i.key]=i.value;}); cfgObj=configDict; }
+      var pw = (cfgObj||{}).api_password||'';
       document.getElementById('apiPwdDisplay').dataset.real=pw;
     }catch(e){}
   }catch(e){ toast('error','加载状态失败',e.message); }
@@ -1270,7 +1272,9 @@ var CONFIG_META = {
 async function loadConfig(){
   try{
     var d=await apiJSON('GET','/panel/config');
-    configData=d.config||d||{};
+    var raw=d.config||d||{};
+    if(Array.isArray(raw)){configData={};raw.forEach(function(i){configData[i.key]=i.value;});}
+    else{configData=raw;}
     envLocked=d.env_locked||[];
     renderConfigTable();
   }catch(e){ toast('error','加载配置失败',e.message); }

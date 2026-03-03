@@ -1003,10 +1003,6 @@
                 </button>
             </div>
 
-            <!-- 移动端优化的标签页 -->
-            <!-- 移动端优化的标签页 -->
-            <div class="tabs">
-
             <!-- API接入地址 -->
             <div class="card" style="background: #e8f4fd; border: 2px solid #4285f4; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
                 <h3 style="margin: 0 0 12px 0; color: #1565c0; font-size: 16px;">🔗 API接入地址</h3>
@@ -1025,6 +1021,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 移动端优化的标签页 -->
+            <div class="tabs">
                 <div class="tab-slider"></div>
                 <button class="tab active" onclick="switchTab('oauth')">OAuth认证</button>
                 <button class="tab" onclick="switchTab('upload')">批量上传</button>
@@ -1154,7 +1153,7 @@
             <!-- 批量上传标签页 -->
             <div id="uploadTab" class="tab-content">
                 <h3>批量上传认证文件</h3>
-                <p>支持批量上传 GCLI 和 Antigravity 认证文件</p>
+                <p>支持批量上传 GCLI 认证文件</p>
 
                 <!-- GCLI凭证上传区域 -->
                 <div
@@ -1195,45 +1194,6 @@
                     </div>
                 </div>
 
-                <!-- Antigravity凭证上传区域 -->
-                <div style="padding: 15px; border: 2px solid #28a745; border-radius: 8px; background: #f8f9fa;">
-                    <h4
-                        style="margin-top: 0; color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 8px; font-size: 16px;">
-                        📤 Antigravity 凭证批量上传</h4>
-
-                    <div style="border: 2px dashed #28a745; border-radius: 8px; padding: 25px; text-align: center; background-color: #fafafa; margin: 15px 0; cursor: pointer;"
-                        onclick="document.getElementById('antigravityFileInput').click()">
-                        <p style="color: #28a745; font-size: 16px; font-weight: bold; margin: 8px 0;">📤 批量上传
-                            Antigravity 凭证文件</p>
-                        <p style="color: #666; font-size: 14px; margin: 4px 0;">支持 .json 和 .zip 格式文件</p>
-                        <p style="color: #888; font-size: 12px; margin: 4px 0;">ZIP文件会自动解压提取其中的JSON凭证</p>
-                    </div>
-
-                    <input type="file" id="antigravityFileInput" multiple accept=".json,.zip" style="display: none;"
-                        onchange="handleAntigravityFileSelect(event)" />
-
-                    <div id="antigravityFileListSection" class="hidden">
-                        <h4>选择的文件：</h4>
-                        <div id="antigravityFileList"></div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button class="btn" style="background-color: #28a745; flex: 1;"
-                                onclick="uploadAntigravityFiles()">上传文件</button>
-                            <button class="btn" style="background-color: #6c757d; flex: 1;"
-                                onclick="clearAntigravityFiles()">清空列表</button>
-                        </div>
-                    </div>
-
-                    <div id="antigravityUploadProgressSection" class="hidden">
-                        <div
-                            style="background-color: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                            <h4>上传进度：</h4>
-                            <div class="progress-bar" style="height: 20px;">
-                                <div class="progress-fill" id="antigravityProgressFill" style="width: 0%"></div>
-                            </div>
-                            <p id="antigravityProgressText" style="text-align: center; margin: 10px 0;">0%</p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div id="manageTab" class="tab-content">
@@ -1823,7 +1783,7 @@
         }
     }
     </script>
-    <script src="./front/common.js"></script>
+    <script src="/front/common.js"></script>
 </body>
 
 </html>
