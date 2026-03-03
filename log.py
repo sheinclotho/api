@@ -205,6 +205,20 @@ def _stop_writer_thread():
 # -----------------------------------------------------------------
 _MAX_QUEUE_SIZE = 5000  # 防止极端情况内存无限增长
 
+# -----------------------------------------------------------------
+# 内存日志缓冲区：保留最近 1000 条日志，供面板实时查看
+# -----------------------------------------------------------------
+_LOG_BUFFER_MAX = 1000
+_log_buffer: deque = deque(maxlen=_LOG_BUFFER_MAX)
+_log_buffer_lock = threading.Lock()
+
+
+def get_recent_logs(n: int = 100) -> list:
+    """返回最近 n 条日志（线程安全）"""
+    with _log_buffer_lock:
+        entries = list(_log_buffer)
+    return entries[-n:] if n < len(entries) else entries
+
 
 def _write_to_file(message: str):
     if _file_writing_disabled:
@@ -247,6 +261,10 @@ def _log(level: str, message: str):
         print(entry, file=sys.stderr)
     else:
         print(entry)
+
+    # 写入内存缓冲区（供面板实时查看）
+    with _log_buffer_lock:
+        _log_buffer.append(entry)
 
     _write_to_file(entry)
 
@@ -305,7 +323,7 @@ class Logger:
 log = Logger()
 
 # 导出的公共接口
-__all__ = ["log", "set_log_level", "LOG_LEVELS"]
+__all__ = ["log", "set_log_level", "LOG_LEVELS", "get_recent_logs"]
 
 # 模块加载时：读取配置缓存 → 清空日志文件 → 启动 writer 线程
 _refresh_config()
